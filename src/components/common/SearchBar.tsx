@@ -9,7 +9,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   searchTerm,
   onSearchChange,
 }) => (
-  <div className="mb-4">
+  <div className="mt-4">
     <input
       type="text"
       placeholder="Search products..."

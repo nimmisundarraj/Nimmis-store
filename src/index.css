@@ -75,3 +75,10 @@ code {
   word-spacing: 0.2rem;
   letter-spacing: 0.1rem;
 }
+
+.product-listing-bg {
+  background: url('../public/assets/logo/bg-3.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
