@@ -1,0 +1,53 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Pure Cow Ghee",
+      "description": "High-quality ghee made from pure cow milk",
+      "image": "/assets/ghee.png",
+      "category": "Dairy"
+    },
+    {
+      "id": 2,
+      "name": "California Almonds",
+      "description": "Premium grade almonds sourced from California",
+      "image": "/assets/almonds.png",
+      "category": "Dry Fruits"
+    },
+    {
+      "id": 3,
+      "name": "Dates",
+      "description": "Sweet and nutritious Medjool dates",
+      "image": "/assets/dates.png",
+      "category": "Dried Fruits"
+    },
+    {
+      "id": 4,
+      "name": "Pista",
+      "description": "Premium quality Pista",
+      "image": "/assets/pista.png",
+      "category": "Dry Fruits"
+    },
+    {
+      "id": 5,
+      "name": "Black raisins",
+      "description": "Premium quality black raisins",
+      "image": "/assets/black-raisins.png",
+      "category": "Dry Fruits"
+    },
+    {
+      "id": 6,
+      "name": "Cashew JHA",
+      "description": "Premium quality cashew",
+      "image": "/assets/cashew.png",
+      "category": "Dry Fruits"
+    },
+    {
+      "id": 7,
+      "name": "Star Anise",
+      "description": "Premium quality star anise",
+      "image": "/assets/star_anise.png",
+      "category": "Dry Fruits"
+    }
+  ]
+}
