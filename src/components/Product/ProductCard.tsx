@@ -14,13 +14,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => (
         alt={product.name}
         className="w-full h-64 object-cover"
       />
-      {/* Top overlay accents */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-80" />
-      {/* Category chip */}
+      <div className="pointer-events-none absolute inset-0 to-transparent opacity-80" />
       <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full text-xs font-semibold text-black bg-gradient-to-br from-amber-300 to-yellow-300 ring-1 ring-black/10">
         {product.category}
       </span>
-      {/* Quick price pill on hover */}
       {product.price != null && (
         <span className="absolute top-3 right-3 z-10 px-3 py-1 rounded-full text-sm font-semibold text-amber-50 bg-black/60 ring-1 ring-white/15 group-hover:bg-black/75 transition">
           ₹{product.price}

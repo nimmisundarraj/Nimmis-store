@@ -205,6 +205,9 @@ const Products: React.FC = () => {
 
             <ProductList products={sorted} />
           </div>
+          <div className="px-4 py-4">
+            <div className="p-2 rounded-md bg-white/80 d-flex text-center">Coming soon...</div>
+          </div>
         </div>
       </div>
     </div>

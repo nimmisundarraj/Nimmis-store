@@ -70,12 +70,12 @@ const Home: React.FC = () => {
       </div>
       <div className="h-screen w-full snap-start home-bg-2 flex flex-col items-center justify-center">
         <div className="text-center max-w-8xl mx-auto px-4">
-          <p className="text-white about-company text-xl mb-8">
+          <p className="bg-black/50 rounded-md text-white about-company text-md md:text-lg lg:text-xl mb-8">
             {companyHistory}
           </p>
           <button
             onClick={handleShowProducts}
-            className="ease-in duration-300 ease-in mt-7 text-white text-2xl border-2 border-white px-8 py-3 rounded-lg hover:bg-white hover:text-black transition-colors"
+            className="ease-in duration-300 text-white text-sm md:text-lg lg:text-xl bg-black/50 px-8 py-3 rounded-lg hover:bg-white/70 hover:text-black/80 transition-colors"
           >
             Show Products
           </button>
