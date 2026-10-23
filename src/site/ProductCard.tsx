@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react';
-import { Link } from 'react-router-dom';
 import { isProductKey, ProductCow } from '../characters';
 import { canHover, useReducedMotion } from '../characters/hooks';
-import { findVariant, imageUrl, inStock, priceSummary, rupees, startVariant } from '../catalog/format';
+import { findVariant, imageUrl, inStock, lowestPrice, percentOff, rupees, startVariant } from '../catalog/format';
 import { usePhotoSrc } from '../catalog/photos';
 import type { CatalogProduct, Variant } from '../catalog/types';
 import { orderMsg, waLink } from './content';
 import { ChatIcon } from './icons';
+import { OrderButton } from './OrderPicker';
 import { ProductArt } from './ProductArt';
 
 const FADE_MS = 180;
 
 /**
  * `order`: the full card with sizes, prices and the WhatsApp Order button (the products page).
- * `link`: a preview whose whole card opens that product on the products page (the home page).
+ * `link`: a preview whose Order button opens the order sheet on that product (the home page).
  */
 type Mode = 'order' | 'link';
 
@@ -63,7 +63,7 @@ export function ProductCard({ product: p, mode = 'order', highlight }: { product
   const hasPhoto = Boolean(shownSrc || p.image);
   const sizeUrl = usePhotoSrc(shownSrc);
   const photoUrl = usePhotoSrc(p.image);
-  const summary = priceSummary(p);
+  const low = lowestPrice(p);
   const detail = [variant?.label, variant?.price != null ? rupees(variant.price) : null].filter(Boolean).join(', ');
 
   return (
@@ -110,11 +110,12 @@ export function ProductCard({ product: p, mode = 'order', highlight }: { product
           </div>
         )}
         <div className="card-foot">
-          {mode === 'order' ? <VariantPrice variant={variant} /> : <span className="price">{summary ? <b>{summary}</b> : <><b>₹</b>Price on WhatsApp</>}</span>}
+          {mode === 'order' ? <VariantPrice variant={variant} /> : low ? <PriceTag price={low.price} mrp={low.mrp} from={low.from} /> : <span className="price"><b>₹</b>Price on WhatsApp</span>}
           {mode === 'link' ? (
-            <Link className="btn btn-sm card-link" to={`/products?item=${encodeURIComponent(p.id)}`}>
-              View<span className="sr-only"> {p.name}</span>
-            </Link>
+            <OrderButton product={p.id} className="btn btn-sm">
+              <ChatIcon />
+              Order on WhatsApp<span className="sr-only">, {p.name}</span>
+            </OrderButton>
           ) : available ? (
             <a className="btn btn-sm" href={waLink(orderMsg(p.name, detail))} target="_blank" rel="noopener noreferrer" data-order="">
               <ChatIcon />
@@ -139,10 +140,22 @@ function VariantPrice({ variant }: { variant?: Variant }) {
         <b>₹</b>Price on WhatsApp
       </span>
     );
+  return <PriceTag price={variant.price} mrp={variant.mrp} />;
+}
+
+/** The selling price, the MRP struck through beside it, and how much is saved. */
+function PriceTag({ price, mrp, from }: { price: number; mrp?: number | null; from?: boolean }) {
+  const off = percentOff(price, mrp);
   return (
     <span className="price">
-      <b>{rupees(variant.price)}</b>
-      {variant.mrp != null && variant.mrp > variant.price && <s className="mrp">{rupees(variant.mrp)}</s>}
+      {from && <span className="price-from">From</span>}
+      <b>{rupees(price)}</b>
+      {off != null && (
+        <>
+          <s className="mrp" aria-label={`MRP ${rupees(mrp!)}`}>{rupees(mrp!)}</s>
+          <span className="price-off">{off}% off</span>
+        </>
+      )}
     </span>
   );
 }

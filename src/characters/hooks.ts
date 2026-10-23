@@ -38,3 +38,16 @@ export function useInView<T extends Element>(ref: RefObject<T>, { once = true, t
 }
 
 export const canHover = () => typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches;
+
+/** Tracks a media query, e.g. useMediaQuery('(min-width: 620px)'). */
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setMatches(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, [query]);
+  return matches;
+}

@@ -32,6 +32,7 @@
 .cow-peek--left .cow-peek__cow { transform: translateX(-105%); }
 .cow-peek--left[data-state="peek"] .cow-peek__cow { transform: translateX(-30%); }
 .cow-peek--left[data-state="peek"]:hover .cow-peek__cow, .cow-peek--left[data-state="excited"] .cow-peek__cow, .cow-peek--left[data-state="happy"] .cow-peek__cow { transform: translateX(-6%); }
+.cow-peek__link { position: absolute; inset: 0; z-index: 1; border-radius: 40% 40% 0 0; }
 .cow-peek__wiggle { width: 100%; height: 100%; transform-origin: 50% 90%; animation: cow-wiggle .7s cubic-bezier(.3, 1.6, .5, 1) both; }
 .cow-peek__wiggle .character { width: 100%; height: 100%; object-fit: contain; object-position: bottom center; }
 .cow-peek[data-state="excited"] .cow-peek__wiggle { animation: cow-bounce .45s ease-in-out infinite alternate; }

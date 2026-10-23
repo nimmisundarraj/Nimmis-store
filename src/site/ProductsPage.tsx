@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { OrderReactions } from '../characters';
 import { useCatalog } from '../catalog/useCatalog';
 import { GENERAL_ORDER, waLink } from './content';
@@ -9,6 +9,7 @@ import { SiteFooter, SiteHeader, type NavLink } from './SiteChrome';
 import './site.css';
 
 const NAV: NavLink[] = [
+  { href: '/', label: 'Home' },
   { href: '/products', label: 'Products' },
   { href: '/#founders', label: 'Our story' },
 ];
@@ -52,6 +53,7 @@ export function ProductsPage() {
       <main>
         <section className="section range shop" aria-labelledby="shop-title">
           <div className="wrap">
+            <BackHome />
             <div className="section-head">
               <span className="eyebrow">The Nimmi’s shop</span>
               <h2 id="shop-title">Everything we make and pack.</h2>
@@ -120,5 +122,30 @@ export function ProductsPage() {
 
       <SiteFooter />
     </div>
+  );
+}
+
+/**
+ * A plain way back for visitors who don't think of the logo. Arriving from the home page, it steps
+ * back in history so they land where they left off; arriving straight from a link, it opens the home page.
+ */
+function BackHome() {
+  const navigate = useNavigate();
+  const cameFromSite = useLocation().key !== 'default';
+  return (
+    <Link
+      className="back-link"
+      to="/"
+      onClick={(e) => {
+        if (!cameFromSite) return;
+        e.preventDefault();
+        navigate(-1);
+      }}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7" />
+      </svg>
+      Back to home
+    </Link>
   );
 }
