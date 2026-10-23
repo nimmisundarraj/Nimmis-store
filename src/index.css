@@ -28,22 +28,6 @@ code {
   font-family: "CooperBlack", sans-serif;
 }
 
-.home-bg {
-  background-image: url("../public/assets/logo/bg-6.png");
-  background-repeat: no-repeat, repeat;
-  background-color: #000;
-  background-position: center;
-  background-size: contain;
-}
-
-.home-bg-2 {
-  background-image: url("../public/assets/logo/home-bg-2.png");
-  background-repeat: no-repeat, repeat;
-  background-color: #000;
-  background-position: center;
-  background-size: cover;
-}
-
 .company-name {
   text-shadow: 1px 3px 2px #d7d1d2;
   color: #ffffff;
@@ -61,13 +45,6 @@ code {
   box-shadow: 1px 1px 10px 10px #0e0d0d30;
   word-spacing: 0.2rem;
   letter-spacing: 0.1rem;
-}
-
-.product-listing-bg {
-  background: url('../public/assets/logo/bg-3.png');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
 }
 
 @media (min-width: 1200px) {

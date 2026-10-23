@@ -1,0 +1,412 @@
+/* Nimmi's ghee site. Premium theme: deep forest green, warm cream type, brass gold as the one accent.
+   Fraunces for headings, Cooper Black only for the Nimmi's wordmark, teak and brass as materials.
+   Element selectors are scoped to .nimmi-site so the older catalog pages keep their own look. */
+
+@font-face {
+  font-family: "Nimmi Cooper";
+  src: url("../styles/cooper-std/CooperBlack-Std.otf") format("opentype");
+  font-weight: 400 900; font-style: normal; font-display: swap;
+}
+
+:root {
+  --forest-0: #07130c; --forest-deep: #050c07; --forest-1: #0b1c13; --forest-2: #10251a; --forest-3: #163021;
+  --cream: #efe6cf; --cream-dim: rgba(239, 230, 207, .7); --cream-faint: rgba(239, 230, 207, .45);
+  --line: rgba(239, 230, 207, .12); --gold: #d9a84a; --gold-hi: #f2c86b; --teak: #6e3d1d;
+  --ghee: #f2be10; --ghee-hi: #ffd64a; --ghee-deep: #d99a00;
+  --red: #c8261b; --red-deep: #9b1a12; --leaf: #2f6b34;
+  --ink: #1a1205; --ink-soft: var(--cream-dim); --paper: var(--forest-2); --butter: var(--forest-1);
+  --f-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --f-brand: var(--f-display);
+  --f-wordmark: "Nimmi Cooper", "Cooper Black", "Cooper Std", Georgia, serif;
+  --f-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --f-ml: "Manjari", "Noto Sans Malayalam", "Kartika", sans-serif;
+  --step--1: clamp(0.8rem, 0.77rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-1: clamp(1.18rem, 1.08rem + 0.5vw, 1.45rem);
+  --step-2: clamp(1.45rem, 1.2rem + 1.1vw, 2.05rem);
+  --step-3: clamp(1.9rem, 1.4rem + 2.3vw, 3.2rem);
+  --step-4: clamp(2.5rem, 1.5rem + 4.6vw, 5.4rem);
+  --space-s: clamp(0.75rem, 0.6rem + 0.6vw, 1.1rem);
+  --space-m: clamp(1.25rem, 0.95rem + 1.3vw, 2.1rem);
+  --space-l: clamp(2.5rem, 1.7rem + 3.4vw, 5rem);
+  --space-xl: clamp(4rem, 2.6rem + 6vw, 8rem);
+  --gutter-l: max(clamp(16px, 4vw, 40px), env(safe-area-inset-left, 0px));
+  --gutter-r: max(clamp(16px, 4vw, 40px), env(safe-area-inset-right, 0px));
+  --wrap: 1200px;
+  --radius: 20px;
+  /* every home-page section: deep forest on the left, warming to green on the right */
+  --bg-page: linear-gradient(90deg, var(--forest-deep), #071e0e);
+}
+
+html { scroll-behavior: smooth; }
+body:has(.nimmi-site) { background: var(--forest-deep) var(--bg-page); }
+/* The site has its own order buddy and Order button in that corner. */
+body:has(.nimmi-site) .cow-buddy { display: none; }
+
+.nimmi-site {
+  background: var(--bg-page); color: var(--cream);
+  font-family: var(--f-body); font-size: var(--step-0); line-height: 1.6;
+  -webkit-font-smoothing: antialiased; overflow-x: clip;
+  /* Ctrl/Cmd + A and drag-selecting don't grab the page's copy; contact details below stay selectable */
+  -webkit-user-select: none; user-select: none;
+}
+.nimmi-site::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--forest-0); }
+.nimmi-site *, .nimmi-site *::before, .nimmi-site *::after { box-sizing: border-box; }
+.nimmi-site a { color: inherit; }
+.nimmi-site :focus-visible { outline: 3px solid var(--gold-hi); outline-offset: 3px; border-radius: 6px; }
+.nimmi-site h1, .nimmi-site h2, .nimmi-site h3 {
+  font-family: var(--f-display); font-weight: 350; line-height: 1.02; margin: 0; text-wrap: balance;
+  letter-spacing: -.018em; color: var(--cream); font-variation-settings: "SOFT" 40;
+}
+.nimmi-site h2 em, .nimmi-site h3 em { font-style: italic; color: var(--gold-hi); }
+.nimmi-site p { margin: 0; text-wrap: pretty; }
+.nimmi-site section { scroll-margin-top: calc(var(--header-h, 76px) + 12px); }
+.ml { font-family: var(--f-ml); }
+.cow-divider { display: inline-flex; align-items: center; gap: 10px; color: var(--gold); }
+.cow-divider i { width: 46px; height: 1px; background: currentColor; }
+.cow-divider img { display: block; width: auto; height: 44px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35)); }
+.eyebrow { font: 600 .82rem/1.3 var(--f-body); letter-spacing: .08em; color: var(--gold-hi); }
+.wrap { max-width: var(--wrap); margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.wordmark { font-family: var(--f-wordmark); color: #d23a2c; line-height: 1; text-shadow: 0 1px 0 rgba(0, 0, 0, .35); }
+
+/* header */
+/* header: a floating pill over the hero, tightening into a compact state once the page scrolls */
+.site-header {
+  --nav-gap: clamp(12px, 2.2vw, 28px);
+  position: fixed; inset: 0 0 auto; z-index: 50; pointer-events: none;
+  padding: calc(env(safe-area-inset-top, 0px) + var(--nav-gap)) var(--gutter-r) 0 var(--gutter-l);
+  transition: padding .45s cubic-bezier(.16, 1, .3, 1);
+}
+.site-header[data-compact] { --nav-gap: 10px; }
+.nav-pill {
+  position: relative; overflow: hidden; pointer-events: auto;
+  width: fit-content; max-width: 100%; margin-inline: auto;
+  display: grid; grid-template-columns: auto auto auto; align-items: center; gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding: .6rem .65rem .6rem 1.1rem; border-radius: 999px;
+  background: color-mix(in srgb, var(--forest-1) 52%, transparent);
+  backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent);
+  box-shadow: 0 14px 34px -16px rgb(0 0 0 / .7), inset 0 1px 0 rgb(242 200 107 / .08);
+  transition: gap .45s cubic-bezier(.16, 1, .3, 1), padding .45s cubic-bezier(.16, 1, .3, 1), background-color .3s ease;
+}
+.site-header[data-compact] .nav-pill { gap: clamp(1rem, 2.4vw, 2rem); padding: .4rem .45rem .4rem .9rem; background: color-mix(in srgb, var(--forest-0) 93%, transparent); }
+.brand { justify-self: start; display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+.brand-mark { display: block; width: auto; height: 40px; flex: none; transition: height .45s cubic-bezier(.16, 1, .3, 1); }
+.site-header[data-compact] .brand-mark { height: 32px; }
+/* The navbar wordmark is an SVG (GoldWordmark); sized so its letters match the old 1.85rem type. */
+.gold-wordmark { display: block; height: 2.1rem; width: auto; aspect-ratio: 458 / 112; overflow: visible; flex: none; }
+.gold-wordmark text { font-family: var(--f-wordmark); }
+/* hidden until the Cooper font has loaded (see useWordmarkFont), then a short fade in; the box keeps its size meanwhile */
+.gold-wordmark { opacity: 0; transition: opacity .25s ease-out; }
+.gold-wordmark[data-ready] { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .gold-wordmark { transition: none; } }
+.brand-sub { font-family: var(--f-body); font-weight: 600; font-size: .7rem; letter-spacing: .28em; color: var(--cream-dim); }
+.nav { display: flex; gap: clamp(1.2rem, 2.6vw, 2.4rem); align-items: center; }
+.nav a { text-decoration: none; font-weight: 500; font-size: 0.95rem; color: var(--cream-dim); padding-block: .6rem; white-space: nowrap; transition: color .2s; }
+.nav a:hover { color: var(--cream); }
+.nav-cta { justify-self: end; min-height: 44px; }
+.nav-toggle { display: none; }
+.nav-menu[hidden] { display: none; }
+@media (max-width: 760px) {
+  .nav { display: none; }
+  .nav-pill { width: auto; grid-template-columns: 1fr auto auto; gap: .5rem; }
+  /* menu button: two cream lines that cross into an X while open */
+  .nav-toggle {
+    display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 50%; cursor: pointer;
+    background: transparent; border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); color: var(--cream);
+  }
+  .nav-toggle span, .nav-toggle span::before { display: block; width: 18px; height: 1.5px; background: currentColor; border-radius: 1px; transition: transform .3s cubic-bezier(.16, 1, .3, 1); }
+  .nav-toggle span { position: relative; transform: translateY(-3px); }
+  .nav-toggle span::before { content: ""; position: absolute; left: 0; top: 6px; }
+  .nav-toggle[aria-expanded="true"] span { transform: rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span::before { transform: translateY(-6px) rotate(-90deg); }
+  .nav-menu {
+    pointer-events: auto; margin-top: .5rem; display: grid; padding: .4rem;
+    border-radius: 22px; background: color-mix(in srgb, var(--forest-0) 95%, transparent);
+    border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); box-shadow: 0 18px 40px -18px rgb(0 0 0 / .8);
+  }
+  .nav-menu a { display: block; padding: .9rem 1rem; text-decoration: none; font: 500 1.05rem/1.2 var(--f-body); color: var(--cream); border-radius: 14px; }
+  .nav-menu a + a { border-top: 1px solid var(--line); }
+  .nav-menu a:hover { background: var(--forest-2); }
+}
+@media (max-width: 480px) { .nav-cta__more { display: none; } }
+@media (max-width: 1000px) { .brand-sub { display: none; } }
+@media (max-width: 440px) { .brand .wordmark { font-size: 1.45rem; } .brand-mark { height: 34px; } }
+@media (prefers-reduced-motion: reduce) { .site-header, .nav-pill, .brand-mark, .nav-toggle span, .nav-toggle span::before { transition: none; } }
+.progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--gold); transform-origin: left; transform: scaleX(0); }
+@supports (animation-timeline: scroll()) { .progress { animation: grow linear both; animation-timeline: scroll(root); } @keyframes grow { to { transform: scaleX(1); } } }
+
+/* buttons: brass pill for the main action, hairline outline for the rest */
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.85em 1.35em; border-radius: 999px; border: 0;
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--ink);
+  font: 700 0.98rem/1 var(--f-body); text-decoration: none; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 14px 28px -14px rgba(217, 168, 74, .7);
+  transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 18px 34px -14px rgba(217, 168, 74, .8); }
+.btn:active { transform: translateY(2px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3); }
+.btn svg { width: 1.15em; height: 1.15em; flex: none; }
+/* the WhatsApp badge sits a little larger and tucks toward the button's edge */
+.btn .wa-icon { width: 1.6em; height: 1.6em; margin: -.3em 0 -.3em -.45em; filter: drop-shadow(0 2px 2px rgb(40 24 0 / .35)); }
+.btn-sm { padding: 0.65em 1.05em; font-size: 0.9rem; }
+/* `.nimmi-site a` (color: inherit) outranks `.btn` alone; deep forest on brass is the readable pairing. */
+.nimmi-site .btn { color: var(--forest-deep); }
+.nimmi-site .btn-ghost { color: var(--cream); }
+.btn-ghost { background: transparent; color: var(--cream); box-shadow: inset 0 0 0 1px var(--cream-faint); }
+.btn-ghost:hover { background: var(--cream); color: var(--forest-0); box-shadow: inset 0 0 0 1px var(--cream); }
+.cta-row { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+/* the band of words under the hero */
+.marquee { background: var(--bg-page); color: var(--cream-dim); border-block: 1px solid var(--line); overflow: hidden; padding-block: 1.05rem; white-space: nowrap; }
+.marquee-track { display: inline-flex; gap: 2.2rem; padding-right: 2.2rem; animation: marquee 36s linear infinite; align-items: center; }
+.marquee span { font-family: var(--f-display); font-style: italic; font-weight: 300; font-size: var(--step-1); }
+.marquee span.ml { font-family: var(--f-ml); font-style: normal; font-size: var(--step-0); color: var(--gold-hi); }
+.marquee i { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); display: inline-block; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* sections */
+.section { padding-block: var(--space-xl); }
+.section-head { display: grid; gap: 0.8rem; max-width: 46rem; margin-bottom: var(--space-l); }
+.section-head h2 { font-size: var(--step-3); }
+.section-head p { color: var(--cream-dim); max-width: 52ch; }
+.note { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--cream-faint); border: 1.5px dashed var(--line); border-radius: 999px; padding: 0.35em 0.9em; width: fit-content; }
+
+/* scroll reveal */
+.reveal { transition: transform 1s cubic-bezier(.16, 1, .3, 1); }
+.reveal[data-reveal="waiting"] { transform: translateY(56px); }
+
+/* sizes: six jars in a quiet gallery. Every stage is the same height and the jars stand on its floor,
+   so the real step from 50 ml up to 2 litres reads at a glance. */
+.lineup-sec { position: relative; background: var(--bg-page); padding-block: var(--space-xl) 0; overflow: clip; }
+.lineup-sec .section-head { margin-bottom: var(--space-m); }
+.size-grid { --stage: clamp(150px, 15vw + 70px, 270px); list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(0.75rem, 1.6vw, 1.5rem); }
+.size-item {
+  position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 1rem; min-width: 0;
+  padding: clamp(0.85rem, 1.6vw, 1.5rem); border-radius: 18px;
+  background: color-mix(in srgb, var(--forest-2) 55%, transparent); border: 1px solid var(--line);
+  transition: transform 1s cubic-bezier(.16, 1, .3, 1), background .3s, border-color .3s;
+}
+.size-item:hover, .size-item:focus-within { background: color-mix(in srgb, var(--forest-3) 70%, transparent); border-color: color-mix(in srgb, var(--gold) 34%, transparent); }
+.size-stage { height: var(--stage); display: flex; align-items: flex-end; justify-content: center; overflow: clip; border-bottom: 1px solid color-mix(in srgb, var(--gold) 22%, transparent); }
+.size-stage img {
+  display: block; height: calc(var(--stage) * var(--scale)); width: auto; max-width: none;
+  /* each photo carries ~10% clear space under the jar; pull it down so every jar meets the floor line */
+  margin-bottom: calc(var(--stage) * var(--scale) * -0.09);
+  filter: drop-shadow(0 12px 10px rgba(0, 0, 0, .4)); transition: transform .45s cubic-bezier(.2, .8, .2, 1);
+}
+/* the 500 ml, 1 L and 2 L photos sit left of centre in their frames; this centres the jar itself */
+.size-item--offset .size-stage img { translate: 20.5% 0; }
+.size-item:hover .size-stage img, .size-item:focus-within .size-stage img { transform: translateY(-6px); }
+.size-info { display: grid; gap: 0.2rem; align-content: start; }
+.nimmi-site .size-qty { font-size: var(--step-2); font-weight: 400; color: var(--cream); font-variant-numeric: lining-nums; }
+.size-note { margin: 0; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.45; }
+.size-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 46px; padding: 0.6em 1em;
+  border-radius: 999px; text-decoration: none; font: 700 0.9rem/1.2 var(--f-body); text-align: center;
+  color: var(--gold-hi); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--gold) 60%, transparent);
+  transition: background .2s, color .2s, box-shadow .2s;
+}
+.nimmi-site .size-cta { color: var(--gold-hi); }
+.size-cta .wa-icon { width: 1.35em; height: 1.35em; flex: none; }
+/* the whole card opens the same link; the outline still lands on the button */
+.size-cta::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.size-item:hover .size-cta, .size-cta:focus-visible { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); box-shadow: none; }
+.nimmi-site .size-item:hover .size-cta, .nimmi-site .size-cta:focus-visible { color: var(--forest-deep); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (max-width: 900px) { .size-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) {
+  .size-grid { --stage: 150px; }
+  .size-item { gap: 0.75rem; border-radius: 14px; }
+  .size-cta { font-size: 0.82rem; padding-inline: 0.5em; gap: 0.35rem; }
+}
+/* narrow phones: drop the badge so "Order on WhatsApp" stays on one line */
+@media (max-width: 420px) { .size-item { padding: 0.7rem; } .size-cta .wa-icon { display: none; } }
+@media (max-width: 340px) { .size-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* the close, under the range: lighter than the cards, a hairline and one invitation */
+.sizes-close { display: grid; justify-items: center; gap: 0.8rem; text-align: center; margin-top: var(--space-l); padding-top: var(--space-l); position: relative; }
+.sizes-close::before { content: ""; position: absolute; top: 0; left: 50%; width: min(240px, 50%); height: 1px; translate: -50% 0; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.nimmi-site .sizes-close h3 { font-size: var(--step-2); font-style: italic; font-weight: 300; }
+.sizes-close p { margin: 0 0 0.6rem; color: var(--cream-dim); max-width: 44ch; }
+
+/* the range: dark cards with a pool of warm light behind each product */
+.range { background: var(--bg-page); }
+.grid-products { display: grid; grid-template-columns: 1fr; gap: var(--space-m); }
+@media (min-width: 620px) { .grid-products { grid-template-columns: repeat(2, minmax(0, 1fr)); } .card.feature { grid-column: span 2; } }
+@media (min-width: 1040px) { .grid-products { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.card {
+  --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 35%;
+  container-type: inline-size; position: relative; display: grid; grid-template-rows: auto 1fr; min-width: 0;
+  background: var(--forest-2); border: 1px solid var(--line); border-radius: var(--radius);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)); transform-style: preserve-3d;
+  transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+}
+.card:hover { box-shadow: 0 30px 50px -28px rgba(0, 0, 0, .8); transition: transform .12s linear, box-shadow .3s; }
+.card-art { position: relative; aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0; background: radial-gradient(60% 65% at var(--gx) var(--gy), rgba(242, 200, 107, .22), rgba(242, 200, 107, .04) 60%, transparent 80%), var(--forest-3); }
+.card-art svg, .card-art .art-img { position: absolute; inset: 0; width: 100%; height: 100%; transform: translateZ(40px); transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .25s; }
+.card-art .art-img { object-fit: contain; padding: 8% 0 6%; filter: drop-shadow(0 22px 18px rgba(0, 0, 0, .55)); }
+.card-art .art-photo { object-fit: cover; padding: 0; filter: none; }
+.card-art video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .4s; }
+.card-art.playing video { opacity: 1; }
+.card:hover .card-art svg, .card:hover .card-art .art-img { transform: translateZ(40px) scale(1.05) translateY(-2%); }
+.card-tag { position: absolute; z-index: 2; top: 0.8rem; left: 0.8rem; font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3em 0.7em; border-radius: 999px; background: rgba(7, 19, 12, .7); color: var(--cream-dim); backdrop-filter: blur(6px); }
+.card-tag.real { background: rgba(217, 168, 74, .16); color: var(--gold-hi); }
+.card-body { display: grid; gap: 0.7rem; padding: 1.15rem 1.15rem 1.25rem; align-content: start; }
+.card-title { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+.card h3 { font-size: var(--step-2); font-weight: 400; }
+.card .ml { color: var(--gold); font-size: 1.02rem; }
+.card p { color: var(--cream-dim); font-size: 0.95rem; line-height: 1.5; }
+.sizes { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.size { font: 500 0.82rem/1 var(--f-mono); padding: 0.55em 0.8em; border-radius: 8px; background: transparent; color: var(--cream); border: 1.5px solid var(--line); cursor: pointer; transition: background .2s, border-color .2s, color .2s; }
+.size:hover { border-color: var(--cream-faint); }
+.size[aria-pressed="true"] { background: var(--cream); border-color: var(--cream); color: var(--forest-0); }
+.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; padding-top: 0.6rem; border-top: 1.5px solid var(--line); }
+.price { font-family: var(--f-mono); font-size: 0.8rem; color: var(--cream-faint); }
+.price b { font-family: var(--f-display); font-weight: 400; font-size: 1.25rem; color: var(--cream); margin-right: 0.3rem; }
+@media (min-width: 620px) {
+  .card.feature { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto; }
+  .card.feature .card-art { aspect-ratio: auto; min-height: 100%; border-radius: calc(var(--radius) - 2px) 0 0 calc(var(--radius) - 2px); }
+  .card.feature h3 { font-size: var(--step-3); }
+}
+@container (min-width: 420px) { .card-body { padding: 1.4rem 1.5rem 1.5rem; } }
+
+/* how it's made */
+.process { background: var(--bg-page); border-block: 1px solid var(--line); }
+.process-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-l); align-items: start; }
+.pot-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 1rem; justify-items: center; }
+/* the stage photos are cut out on transparency and stacked; the one for the current step fades in */
+.pot-wrap { position: relative; width: 100%; max-width: 520px; aspect-ratio: 960 / 916; }
+.pot-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; opacity: 0; transition: opacity .6s ease; }
+.pot-wrap img[data-shown] { opacity: 1; }
+.readout { display: flex; gap: 1.2rem; align-items: baseline; font-family: var(--f-mono); color: var(--cream-faint); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.readout strong { font-family: var(--f-display); font-weight: 300; font-size: var(--step-3); letter-spacing: 0; text-transform: none; color: var(--gold-hi); font-variant-numeric: tabular-nums; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; }
+.step { min-height: 62vh; display: grid; align-content: center; gap: 0.7rem; padding-block: 2rem; opacity: .3; transition: opacity .5s; }
+/* tall enough that the pinned pot is still beside the last step when it lines up */
+.step:last-child { min-height: 80vh; align-content: start; padding-top: 18vh; }
+.step.is-active { opacity: 1; }
+.step-n { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase; }
+.step h3 { font-size: var(--step-3); }
+.step p { color: var(--cream-dim); max-width: 40ch; font-size: var(--step-1); line-height: 1.5; }
+@media (max-width: 860px) {
+  .process-grid { grid-template-columns: 1fr; gap: 0; }
+  .pot-col { top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 2; background: linear-gradient(var(--forest-0) 85%, transparent); padding-block: 0.5rem 1.5rem; }
+  .pot-wrap { max-width: 280px; }
+  .readout strong { font-size: var(--step-2); }
+  .step { min-height: 52vh; }
+  .step:last-child { min-height: 50vh; align-content: center; padding-top: 2rem; }
+}
+
+/* where it goes */
+.uses-sec { background: var(--bg-page); }
+.uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--space-s); }
+.use { container-type: inline-size; min-width: 0; background: var(--forest-1); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-m); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; align-content: start; transition: transform .3s cubic-bezier(.2,.9,.25,1.3), border-color .3s; }
+.use:hover { transform: translateY(-4px); border-color: rgba(217, 168, 74, .4); }
+/* the Malayalam word scales with its card so the longest (നിലവിളക്ക്) still fits on one line */
+.use .ml { font-size: min(var(--step-3), 18.5cqi); color: var(--gold-hi); line-height: 1.15; white-space: nowrap; }
+.use h3 { font-size: var(--step-1); }
+.use p { color: var(--cream-dim); font-size: 0.95rem; }
+
+/* our story: the founders, with the shop board in front of them */
+#shop { background: var(--bg-page); }
+.story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-l); align-items: center; }
+@media (max-width: 860px) { .story { grid-template-columns: 1fr; } }
+.founders { margin: 0; position: relative; display: grid; justify-items: center; gap: .9rem; }
+.founders__board { position: relative; z-index: 1; width: 100%; height: auto; border-radius: 10px; border: 1px solid rgba(239, 230, 207, .25); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .8); }
+.founders figcaption { font-family: var(--f-mono); font-size: .72rem; letter-spacing: .06em; color: var(--cream-faint); }
+/* the shop on the map: a framed live map, with the brand bar along its foot so it never hides the pin or Google's labels */
+.shop-map { margin: 0; display: grid; border-radius: var(--radius); overflow: hidden; border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); box-shadow: 0 30px 50px -24px rgba(0, 0, 0, .8); background: var(--forest-1); }
+.shop-map__frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 0; filter: saturate(.85) contrast(.96); }
+.shop-map__card { display: flex; align-items: center; gap: .75rem; padding: .7rem .75rem .7rem .9rem; border-top: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+.shop-map__card img { height: 40px; width: auto; flex: none; }
+.shop-map__name { display: grid; gap: .1rem; min-width: 0; margin-right: auto; }
+.shop-map__name strong { font: 400 1.1rem/1.15 var(--f-display); color: var(--cream); }
+.shop-map__name span { font-size: .82rem; color: var(--cream-dim); line-height: 1.3; }
+.shop-map__card .btn { flex: none; }
+@media (max-width: 600px) { .shop-map__frame { aspect-ratio: 4 / 3; } }
+.story-copy { display: grid; gap: var(--space-s); }
+.story-copy h2 { font-size: var(--step-3); }
+.story-copy p { color: var(--cream-dim); max-width: 54ch; font-size: var(--step-1); line-height: 1.55; }
+.story-copy p.big { font-family: var(--f-display); font-weight: 300; font-style: italic; color: var(--cream); font-size: var(--step-2); line-height: 1.2; }
+.trust { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: var(--space-s); margin: var(--space-l) 0 0; }
+.trust div { border-top: 1px solid var(--line); padding-top: 0.8rem; display: grid; gap: 0.2rem; }
+.trust dt { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream-faint); }
+.trust dd, .contact-list dd { -webkit-user-select: text; user-select: text; }
+.trust dd { margin: 0; font-size: 1.02rem; font-weight: 500; color: var(--cream); }
+.trust dd.todo { color: var(--gold-hi); }
+
+/* order: a lit brass panel on deep green */
+.order { position: relative; overflow: clip; background: var(--bg-page); color: var(--cream); border-top: 1px solid var(--line); }
+/* the order cow gets her own floor so she never sits on the shop details */
+.order .wrap { position: relative; padding-block: var(--space-xl) calc(var(--space-xl) + 64px); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: var(--space-l); align-items: end; }
+@media (max-width: 860px) { .order .wrap { grid-template-columns: 1fr; } }
+.order h2 { font-size: var(--step-4); font-weight: 300; }
+.order h2 em { color: var(--gold-hi); font-style: italic; }
+.order-side { display: grid; gap: 1.2rem; }
+.order-side p { color: var(--cream-dim); }
+.contact-list { display: grid; gap: 0.6rem; margin: 0; }
+.contact-list div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 0.6rem; flex-wrap: wrap; }
+.contact-list dt { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cream-faint); }
+.contact-list dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.contact-list a { color: var(--gold-hi); }
+
+.site-footer { background: var(--bg-page); color: var(--cream-faint); border-top: 1px solid var(--line); }
+.site-footer .wrap { padding-block: 2rem calc(2rem + 64px); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; }
+.site-footer .gold-wordmark { height: 1.7rem; }
+.footer-brand { display: inline-flex; align-items: center; gap: 0.6rem; }
+.footer-brand .brand-mark { height: 44px; }
+.site-footer .tag { font-family: var(--f-display); font-style: italic; color: var(--gold); }
+
+
+/* cow spots */
+.peek-slot { position: absolute; z-index: 3; }
+.peek-slot > .cow-peek { width: 100%; height: 100%; }
+.peek-slot--order { right: 4%; bottom: 0; z-index: 2; width: clamp(110px, 13vw, 170px); aspect-ratio: 1; }
+@media (max-width: 520px) { .peek-slot--order { width: 92px; right: auto; left: 12px; } .order .wrap { padding-bottom: calc(var(--space-xl) + 84px); } }
+.nimmi-site .bubble { background: var(--cream); color: var(--forest-0); }
+.product-cow .character { filter: drop-shadow(0 14px 14px rgba(0, 0, 0, .55)); }
+
+/* cow tweaks for this site: never cut her mid-head */
+.nimmi-site .cow-peek--bottom[data-state="peek"] .cow-peek__cow { transform: translateY(4%); }
+.nimmi-site .cow-peek--bottom[data-state="peek"]:hover .cow-peek__cow,
+.nimmi-site .cow-peek--bottom[data-state="happy"] .cow-peek__cow,
+.nimmi-site .cow-peek--bottom[data-state="excited"] .cow-peek__cow { transform: translateY(1%); }
+.nimmi-site .cow-peek--bottom[data-state="excited"] .cow-peek__wiggle { animation-name: cow-rock; }
+@keyframes cow-rock { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
+.nimmi-site .cow-peek--right[data-state="peek"] .cow-peek__cow { transform: translateX(3%); }
+.nimmi-site .cow-peek--right[data-state="peek"]:hover .cow-peek__cow,
+.nimmi-site .cow-peek--right[data-state="excited"] .cow-peek__cow,
+.nimmi-site .cow-peek--right[data-state="happy"] .cow-peek__cow { transform: translateX(0); }
+.nimmi-site .order-buddy[data-state="excited"] .order-buddy__cow { transform: translateY(5%); }
+.nimmi-site .order-buddy[data-state="happy"] .order-buddy__cow { transform: translateY(3%); }
+
+/* loader: the cow walks on the spot while the ground scrolls, so she is never half off the track */
+.nimmi-site .cow-loader__track { overflow: visible; border-bottom: 0; }
+.nimmi-site .cow-loader__track::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: repeating-linear-gradient(90deg, rgba(255,245,214,.32) 0 10px, transparent 10px 18px); -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); animation: loader-ground .5s linear infinite; }
+.nimmi-site .cow-loader__track::before { content: ""; position: absolute; left: calc(50% - 40px); bottom: 2px; width: 80px; height: 10px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.35), transparent); }
+.nimmi-site .cow-loader__cow { left: calc(50% - 55px); animation: none; }
+
+/* loader: the site's forest greens (it fades straight into the hero), with gold curry-leaf line art
+   rooted in the top-right corner and echoed bottom-left, both reaching in toward the emblem */
+.nimmi-site .cow-loader {
+  overflow: hidden;
+  background: radial-gradient(90% 75% at 50% 45%, var(--forest-1) 0%, var(--forest-0) 55%, var(--forest-deep) 100%);
+}
+.nimmi-site .cow-loader::before, .nimmi-site .cow-loader::after {
+  content: ""; position: absolute; width: clamp(300px, 45vw, 630px); aspect-ratio: 1; pointer-events: none; opacity: 0;
+  background: center / contain no-repeat;
+  animation: loader-leaf-in 1.4s ease-out .2s forwards, loader-leaf-sway 7s ease-in-out 1.6s infinite alternate;
+}
+/* each bunch fans out from its own corner and sways from there */
+.nimmi-site .cow-loader::before { top: -2%; right: -2%; background-image: url("./leaves-a.svg"); transform-origin: 98% 2%; }
+.nimmi-site .cow-loader::after { bottom: -2%; left: -2%; width: clamp(255px, 36vw, 510px); background-image: url("./leaves-b.svg"); transform-origin: 2% 98%; animation-duration: 1.4s, 8.5s; }
+@keyframes loader-leaf-in { from { opacity: 0; scale: .94; } to { opacity: .45; scale: 1; } }
+@keyframes loader-leaf-sway { from { transform: rotate(-1.5deg); } to { transform: rotate(1.5deg); } }
+@keyframes loader-ground { to { background-position: -18px 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .nimmi-site *, .nimmi-site *::before, .nimmi-site *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  html { scroll-behavior: auto; }
+}

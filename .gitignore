@@ -11,6 +11,11 @@ package-lock.json
 
 # production
 /build
+.claude
+.agents
+.codegraph
+CLAUDE.md
+skills-lock.json
 
 # misc
 .DS_Store
