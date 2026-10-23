@@ -1,0 +1,70 @@
+.cow-buddy {
+  --size: 128px;
+  position: fixed; z-index: 56; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: 0;
+  width: var(--size); height: calc(var(--size) * 1.4);
+}
+/* Head-only poses: hide the neck below the screen edge so she reads as peeking up, not floating. */
+.cow-buddy[data-peek] { clip-path: inset(-300% -300% 0 -300%); }
+.cow-buddy[data-peek] .cow-buddy__move { animation: buddy-peek-in .5s cubic-bezier(.2, .9, .25, 1.3) both; }
+@keyframes buddy-peek-in { from { transform: translateY(100%); } to { transform: translateY(16%); } }
+.cow-buddy__hit {
+  position: absolute; inset: 0; padding: 0; border: 0; background: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.cow-buddy__hit:focus-visible { outline: 3px solid #c8261b; outline-offset: 2px; border-radius: 16px; }
+.cow-buddy__move, .cow-buddy__body { position: absolute; inset: 0; display: block; transform-origin: 50% 100%; }
+.cow-buddy .character {
+  width: 100%; height: 100%; object-fit: contain; object-position: bottom center;
+  filter: drop-shadow(0 8px 10px rgba(80, 40, 0, .28));
+}
+.cow-buddy__move { animation: buddy-in .6s cubic-bezier(.2, .9, .25, 1.3) both; }
+.cow-buddy__hit:hover .cow-buddy__body { translate: 0 -4px; transition: translate .25s; }
+
+.cow-buddy[data-action="idle"] .cow-buddy__body { animation: buddy-breathe 2.6s ease-in-out infinite; }
+.cow-buddy[data-action="happy"] .cow-buddy__body { animation: buddy-sway .6s ease-in-out infinite alternate; }
+.cow-buddy[data-action="love"] .cow-buddy__body { animation: buddy-sway .9s ease-in-out infinite alternate; }
+.cow-buddy[data-action="excited"] .cow-buddy__body { animation: buddy-bounce .38s ease-in-out infinite alternate; }
+.cow-buddy[data-action="laugh"] .cow-buddy__body { animation: buddy-laugh .16s linear infinite alternate; }
+.cow-buddy[data-action="worried"] .cow-buddy__body { animation: buddy-tremble .09s linear infinite alternate; rotate: -6deg; }
+.cow-buddy[data-action="sleepy"] .cow-buddy__body { animation: buddy-breathe 3.4s ease-in-out infinite; rotate: 4deg; }
+.cow-buddy[data-action="jump"] .cow-buddy__body { animation: buddy-jump .9s cubic-bezier(.3, 0, .4, 1) 2; }
+.cow-buddy[data-action="walk"] .cow-buddy__move { animation: buddy-walk 6.2s ease-in-out both; }
+.cow-buddy[data-action="walk"] .cow-buddy__body { animation: buddy-step .32s ease-in-out infinite alternate; }
+
+@keyframes buddy-in { from { transform: translateY(30%) scale(.92); } to { transform: none; } }
+@keyframes buddy-breathe { 0%, 100% { scale: 1 1; } 50% { scale: 1.015 1.035; } }
+@keyframes buddy-sway { from { rotate: -5deg; } to { rotate: 5deg; } }
+@keyframes buddy-bounce { from { translate: 0 0; rotate: -3deg; } to { translate: 0 -10%; rotate: 3deg; } }
+@keyframes buddy-laugh { from { rotate: -6deg; translate: 0 0; } to { rotate: 6deg; translate: 0 -3%; } }
+@keyframes buddy-tremble { from { translate: -2px 0; } to { translate: 2px 0; } }
+@keyframes buddy-jump {
+  0% { scale: 1 1; translate: 0 0; }
+  18% { scale: 1.14 .82; translate: 0 0; }
+  45% { scale: .9 1.12; translate: 0 -55%; }
+  62% { scale: 1 1; translate: 0 -62%; }
+  86% { scale: 1.12 .86; translate: 0 0; }
+  100% { scale: 1 1; translate: 0 0; }
+}
+/* The walking pose faces right, so it is mirrored while she trots left and back again. */
+@keyframes buddy-walk {
+  0% { transform: translateX(0) scaleX(-1); }
+  45% { transform: translateX(min(-45vw, -260px)) scaleX(-1); }
+  50% { transform: translateX(min(-45vw, -260px)) scaleX(1); }
+  95%, 100% { transform: translateX(0) scaleX(1); }
+}
+@keyframes buddy-step { from { translate: 0 0; rotate: -2deg; } to { translate: 0 -4%; rotate: 2deg; } }
+
+.cow-buddy .hearts { top: 10%; }
+.cow-buddy__zzz { position: absolute; left: 62%; top: 4%; pointer-events: none; }
+.cow-buddy__zzz i {
+  position: absolute; font: 700 1.1rem/1 var(--f-body, system-ui, sans-serif); font-style: normal; color: #6a4c17;
+  animation: buddy-zzz 2s ease-out infinite; animation-delay: calc(var(--i) * .6s); opacity: 0;
+}
+@keyframes buddy-zzz { 0% { opacity: 0; transform: translate(0, 0) scale(.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(24px, -46px) scale(1.2); } }
+.cow-buddy__bubble { position: absolute; right: 62%; bottom: 82%; }
+
+@media (max-width: 520px) { .cow-buddy { --size: 96px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cow-buddy *, .cow-buddy .hearts i { animation: none !important; }
+}

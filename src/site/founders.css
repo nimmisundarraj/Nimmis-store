@@ -1,0 +1,67 @@
+/* Founders: mirrors the hero (portrait left, copy right) with the same palette, type and divider. */
+.makers {
+  --fp: 0;
+  position: relative; overflow-x: clip; color: var(--cream);
+  background: var(--bg-page);
+  padding-block: var(--space-xl);
+}
+.makers__wrap {
+  max-width: var(--wrap); margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: var(--space-l); align-items: center;
+}
+
+/* portrait: an arch in a thin gold line, lit from the upper right */
+.makers__art { position: relative; width: min(100%, 460px); justify-self: center; }
+.makers__glow {
+  position: absolute; inset: -18% -22% 10% 8%; z-index: 0; pointer-events: none;
+  background: radial-gradient(closest-side at 68% 30%, color-mix(in srgb, var(--gold-hi) 34%, transparent), transparent);
+  filter: blur(18px);
+}
+.makers__frame {
+  position: relative; z-index: 1; padding: 10px;
+  border: 1px solid var(--gold); border-radius: 50% 50% 14px 14px / 34% 34% 14px 14px;
+  box-shadow: 0 40px 70px -36px rgba(0, 0, 0, .85);
+  transform: translateY(calc(var(--fp) * 26px)); will-change: transform;
+}
+.makers__frame img {
+  display: block; width: 100%; height: auto;
+  border-radius: 50% 50% 8px 8px / 33% 33% 8px 8px;
+}
+
+/* copy */
+.makers__copy { position: relative; display: grid; gap: clamp(1rem, 2.4vh, 1.5rem); justify-items: start; max-width: 34rem; }
+.makers__copy > :not(.makers__ghost) { position: relative; z-index: 1; }
+.makers__ghost {
+  position: absolute; z-index: 0; right: -.04em; top: 50%; translate: 0 -50%; pointer-events: none; user-select: none;
+  font-family: var(--f-display); font-weight: 300; font-size: clamp(11rem, 6rem + 16vw, 21rem); line-height: .8; letter-spacing: -.04em;
+  color: transparent; -webkit-text-stroke: 1.5px var(--gold); opacity: .14;
+}
+.makers__eyebrow { margin: 0; font: 600 .82rem/1.3 var(--f-body); letter-spacing: .08em; color: var(--gold-hi); }
+.nimmi-site .makers__title {
+  margin: 0; font-family: var(--f-display); font-weight: 300; font-optical-sizing: auto; font-variation-settings: "SOFT" 30;
+  font-size: clamp(2.3rem, 1.3rem + 3.2vw, 4.2rem); line-height: 1; letter-spacing: -.025em; color: var(--cream); text-wrap: balance;
+}
+.makers__title em { font-style: italic; font-weight: 400; color: var(--gold-hi); }
+.makers__lede { margin: 0; max-width: 40ch; color: var(--cream-dim); font-size: clamp(1rem, .95rem + .25vw, 1.12rem); line-height: 1.6; }
+.makers__sign { margin: .4rem 0 0; font-family: var(--f-display); font-style: italic; font-weight: 300; font-size: var(--step-1); color: var(--gold-hi); }
+.makers__years { margin: -.6rem 0 0; font: 500 .64rem/1.35 var(--f-body); letter-spacing: .16em; text-transform: uppercase; color: var(--cream-dim); }
+
+/* entrance: set up only once JS has marked the section, so it never hides without motion */
+.makers__art, .makers__glow, .makers__line {
+  transition: opacity 1s ease, transform 1.1s cubic-bezier(.16, 1, .3, 1);
+}
+.makers__glow { transition: opacity 1.8s ease .45s; }
+.makers__line { transition-delay: calc(250ms + var(--i, 0) * 90ms); }
+.makers[data-in="false"] .makers__art { opacity: 0; transform: translateY(40px); }
+.makers[data-in="false"] .makers__glow { opacity: 0; }
+.makers[data-in="false"] .makers__line { opacity: 0; transform: translateY(16px); }
+
+@media (max-width: 860px) {
+  .makers__wrap { grid-template-columns: 1fr; gap: var(--space-l); }
+  .makers__art { width: min(80%, 420px); }
+  .makers__copy { max-width: none; }
+  .makers__ghost { right: 0; top: 4%; translate: none; font-size: clamp(9rem, 44vw, 14rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .makers__frame { transform: none; }
+}

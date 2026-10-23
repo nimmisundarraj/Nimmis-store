@@ -111,7 +111,7 @@ const Products: React.FC = () => {
                       className="w-full rounded-xl bg-black/30 text-amber-50 ring-1 ring-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-300/60"
                     >
                       <option value="relevance">Relevance</option>
-                      <option value="name">Name (A–Z)</option>
+                      <option value="name">Name (A to Z)</option>
                       <option value="priceAsc">Price: Low → High</option>
                       <option value="priceDesc">Price: High → Low</option>
                     </select>
@@ -193,7 +193,7 @@ const Products: React.FC = () => {
                         className="w-full rounded-xl bg-black/30 text-amber-50 ring-1 ring-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-amber-300/60"
                       >
                         <option value="relevance">Relevance</option>
-                        <option value="name">Name (A–Z)</option>
+                        <option value="name">Name (A to Z)</option>
                         <option value="priceAsc">Price: Low → High</option>
                         <option value="priceDesc">Price: High → Low</option>
                       </select>

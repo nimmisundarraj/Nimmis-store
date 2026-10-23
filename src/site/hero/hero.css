@@ -1,0 +1,92 @@
+/* Hero: a ghee pour pinned under the header while the page starts to scroll. */
+.hero3 {
+  --hero-p: 0; --hero-pin: 26svh;
+  position: relative; isolation: isolate; color: var(--cream);
+  /* every home-page section sits on --forest-deep, so they meet without seams */
+  background: var(--bg-page);
+}
+.hero3__pin { position: relative; overflow: clip; }
+@media (min-width: 861px) {
+  /* the nav floats over the photo, so the hero fills the whole viewport */
+  .hero3 { height: calc(100svh + var(--hero-pin)); }
+  .hero3__pin { position: sticky; top: 0; height: 100svh; min-height: 560px; }
+}
+.hero3__scene { position: absolute; inset: 0; z-index: 0; }
+.hero3__scrim {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, #040b07f2, #040b07b8 32%, #040b0700 56%), linear-gradient(0deg, var(--forest-deep), rgb(5 12 7 / .55) 4%, rgb(5 12 7 / 0) 12%);
+}
+.hero3__leaf { position: absolute; z-index: 2; pointer-events: none; width: clamp(160px, 18vw, 280px); }
+.hero3__leaf--tl { left: -2%; top: -4%; transform: rotate(178deg); filter: blur(2.5px) brightness(.8); opacity: .9; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero3__leaf--tl { animation: hero3-sway 9s ease-in-out infinite alternate; transform-origin: 85% 10%; }
+}
+@keyframes hero3-sway { to { transform: rotate(181deg) translateY(4px); } }
+
+.hero3__wrap {
+  position: relative; z-index: 4; height: 100%; max-width: var(--wrap); margin-inline: auto;
+  padding-block: clamp(2rem, 6vh, 4rem); padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  display: grid; align-items: center; pointer-events: none;
+}
+.hero3__copy { display: grid; gap: clamp(1rem, 2.6vh, 1.6rem); max-width: 36rem; pointer-events: auto; }
+/* the anniversary mark sits where an eyebrow would, tucked toward the headline */
+/* the seal art is a touch taller than wide; drawn square it reads as a full, round coin */
+.hero3__badge { display: block; height: clamp(140px, 22vh, 200px); width: auto; aspect-ratio: 1; filter: drop-shadow(0 10px 22px rgb(4 11 7 / .55)); }
+@media (max-width: 860px) { .hero3__badge { height: 140px; } }
+/* One dominant line: Fraunces at a size that commands the dark half of the photo without filling it. */
+.nimmi-site .hero3__title {
+  margin: 0; font-family: var(--f-display); font-weight: 300; font-optical-sizing: auto; font-variation-settings: "SOFT" 30;
+  font-size: clamp(2.5rem, 1.3rem + 3.6vw, 4.6rem); line-height: 1.04; letter-spacing: -.022em; color: var(--cream);
+  text-wrap: balance; text-shadow: 0 2px 24px rgb(4 11 7 / .5);
+}
+.hero3__keep { white-space: nowrap; }
+.hero3__lede { margin: 0; max-width: 42ch; color: var(--cream-dim); font-size: clamp(1rem, .94rem + .3vw, 1.15rem); line-height: 1.6; }
+.hero3__cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; margin-top: .6rem; }
+.hero3__btn { padding: .95em 1.6em; font-weight: 600; }
+.hero3__link { color: var(--cream); font-weight: 500; text-decoration: underline; text-decoration-color: #efe6cf59; text-underline-offset: .35em; }
+.hero3__link:hover { text-decoration-color: var(--gold-hi); }
+.hero3__cowslot { position: absolute; z-index: 3; right: clamp(170px, 14vw, 250px); bottom: 0; width: clamp(100px, 9vw, 140px); aspect-ratio: 296 / 326; }
+.hero3__cowslot > .cow-peek { width: 100%; height: 100%; }
+/* once the page scrolls she ducks fully out of sight, but her spot stays live: bring the cursor
+   down to it (or hover an Order button in the hero) and she pops back up */
+.nimmi-site .hero3__cowslot[data-away] .cow-peek:not(:hover):not([data-state="excited"]):not([data-state="happy"]) .cow-peek__cow { transform: translateY(105%); }
+.hero3__cowslot .character { filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .45)); }
+
+/* the pour scene: a still photo with the stream, ripples and light painted on a canvas */
+.pour-scene { overflow: hidden; container-type: size; background: radial-gradient(46% 62% at 68% 45%, #241f0b 0%, #121a0d 42%, #08120b 74%, var(--forest-deep) 100%); }
+/* The 3:2 garden photo covers the scene. --pour-ax/--pour-ay pick which part survives the crop. */
+.pour-scene__stage {
+  --stage-w: max(100cqw, 150cqh);
+  position: absolute; width: var(--stage-w); aspect-ratio: 3 / 2;
+  left: calc((100cqw - var(--stage-w)) * var(--pour-ax, .7));
+  top: calc((100cqh - var(--stage-w) / 1.5) * var(--pour-ay, .08));
+  transform: scale(calc(1 + var(--hero-p, 0) * .08)); transform-origin: 69% 36%; will-change: transform;
+}
+.pour-scene__photo, .pour-scene__canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; max-width: none; display: block; }
+.pour-scene__photo { object-fit: cover; opacity: 0; transition: opacity 1s ease; }
+.pour-scene[data-state="ready"] .pour-scene__photo, .pour-scene[data-state="still"] .pour-scene__photo { opacity: 1; }
+.pour-scene__canvas { pointer-events: none; }
+
+/* Desktop shows the whole photo (stone, jasmine and spices included): fit to the height, sit it on
+   the right, and fade its left edge into the forest behind the copy. Narrow windows still crop. */
+@media (min-width: 861px) {
+  .pour-scene { --pour-ax: 1; --pour-ay: 0; }
+  .pour-scene__stage {
+    --stage-w: 150cqh;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 24%);
+  }
+}
+
+@media (max-width: 860px) {
+  .hero3__scene { position: relative; inset: auto; height: 62svh; min-height: 380px; max-height: 620px; }
+  /* the photo's own mask fades it out, so the page gradient shows through below it without a seam */
+  .hero3__scrim { display: none; }
+  .hero3__leaf--tl { width: 40vw; }
+  .hero3__wrap { height: auto; padding-top: .5rem; }
+  .pour-scene { --pour-ax: .88; --pour-ay: .4; background: transparent; }
+  /* fade the visible frame, not the whole photo, which runs past it when cropped */
+  .pour-scene { -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 24%); mask-image: linear-gradient(0deg, transparent 0, #000 24%); }
+  .hero3__cowslot { bottom: auto; top: calc(clamp(380px, 62svh, 620px) - 96px); right: 12px; width: 88px; }
+}
+@media (prefers-reduced-motion: reduce) { .hero3 * { animation: none !important; transition: none !important; } }
