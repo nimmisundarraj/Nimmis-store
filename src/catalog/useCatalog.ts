@@ -13,6 +13,7 @@ let pending: Promise<CatalogProduct[]> | null = null;
 function load() {
   pending ??= import('./api')
     .then((api) => api.fetchActiveProducts())
+    .then(withGhee)
     .then((list) => {
       writeCache(list);
       return list;
@@ -33,7 +34,7 @@ export function useCatalog(): CatalogState {
   const [state, setState] = useState<CatalogState>(() => {
     if (!firebaseEnabled) return { products: SEED_PRODUCTS.filter((p) => p.active), loading: false };
     const cached = readCache();
-    return cached ? { products: cached, loading: false } : { products: [], loading: true };
+    return cached ? { products: withGhee(cached), loading: false } : { products: [], loading: true };
   });
 
   useEffect(() => {
@@ -48,6 +49,17 @@ export function useCatalog(): CatalogState {
   }, []);
 
   return state;
+}
+
+/**
+ * Ghee is the shop's main product and the size gallery, dish cards and order sheet all lean on it,
+ * so while the live catalog has no `ghee` product the starter one stands in (prices on WhatsApp).
+ * Once a `ghee` product is active in Firestore, that one is used instead.
+ */
+function withGhee(list: CatalogProduct[]): CatalogProduct[] {
+  if (list.some((p) => p.id === 'ghee')) return list;
+  const ghee = SEED_PRODUCTS.find((p) => p.id === 'ghee');
+  return ghee ? [ghee, ...list] : list;
 }
 
 function readCache(): CatalogProduct[] | null {

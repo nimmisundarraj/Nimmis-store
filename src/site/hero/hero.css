@@ -45,11 +45,13 @@
 .hero3__btn { padding: .95em 1.6em; font-weight: 600; }
 .hero3__link { color: var(--cream); font-weight: 500; text-decoration: underline; text-decoration-color: #efe6cf59; text-underline-offset: .35em; }
 .hero3__link:hover { text-decoration-color: var(--gold-hi); }
-.hero3__cowslot { position: absolute; z-index: 3; right: clamp(170px, 14vw, 250px); bottom: 0; width: clamp(100px, 9vw, 140px); aspect-ratio: 296 / 326; }
+/* bottom right corner, out of the copy's way; tapping her goes down to the ghee sizes */
+.hero3__cowslot { position: absolute; z-index: 3; right: clamp(16px, 3vw, 48px); bottom: 0; width: clamp(100px, 9vw, 140px); aspect-ratio: 296 / 326; }
 .hero3__cowslot > .cow-peek { width: 100%; height: 100%; }
 /* once the page scrolls she ducks fully out of sight, but her spot stays live: bring the cursor
    down to it (or hover an Order button in the hero) and she pops back up */
 .nimmi-site .hero3__cowslot[data-away] .cow-peek:not(:hover):not([data-state="excited"]):not([data-state="happy"]) .cow-peek__cow { transform: translateY(105%); }
+.nimmi-site .hero3__cowslot[data-away] .cow-peek:not(:hover):not([data-state="excited"]):not([data-state="happy"]) .cow-peek__bubble { opacity: 0; }
 .hero3__cowslot .character { filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .45)); }
 
 /* the pour scene: a still photo with the stream, ripples and light painted on a canvas */

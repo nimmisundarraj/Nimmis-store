@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import { CowLoader, CowPeek, OrderReactions } from '../characters';
-import { useReducedMotion } from '../characters/hooks';
-import { Link } from 'react-router-dom';
+import { useMediaQuery, useReducedMotion } from '../characters/hooks';
+import { Link, useNavigationType } from 'react-router-dom';
 import { findVariant, rupees } from '../catalog/format';
 import type { CatalogProduct } from '../catalog/types';
 import { useCatalog } from '../catalog/useCatalog';
-import { asset, EMAIL, FSSAI_NO, GENERAL_ORDER, GHEE_IMG, INSTAGRAM_URL, MAP_EMBED, MAPS_URL, SHOP_HOURS, SIZE_RANGE, USES, sizeOrderMsg, waLink } from './content';
+import { asset, EMAIL, FSSAI_NO, GHEE_IMG, INSTAGRAM_URL, MAP_EMBED, MAPS_URL, SHOP_HOURS, SIZE_RANGE, USES, sizeOrderMsg, waLink } from './content';
 import { Founders } from './Founders';
 import { Hero } from './hero/Hero';
 import { ChatIcon, SvgDefs } from './icons';
+import { DishCard } from './DishCard';
+import { MoreProductsCard } from './MoreProductsCard';
+import { OrderButton } from './OrderPicker';
 import { ProductCard } from './ProductCard';
 import { SiteFooter, SiteHeader } from './SiteChrome';
 import './site.css';
@@ -24,6 +27,9 @@ const NAV = [
   { href: '#founders', label: 'Our story' },
 ];
 
+/** Product cards on the home page before the "more in the shop" tile: two full rows wide, three on a phone. */
+const HOME_CARDS = { wide: 5, narrow: 3 };
+
 const MARQUEE = ['Making ghee since 1994', 'നെയ്യ്', 'Small batches, made by hand', 'Six sizes, 50 ml to 2 litres', 'Dry fruits and spices'];
 
 /** The one-page Nimmi's ghee site. */
@@ -33,9 +39,13 @@ export function NimmiSite() {
   const onSceneReady = useCallback(() => setSceneReady(true), []);
   const [introSeen] = useState(() => readFlag(INTRO_KEY));
   const { products } = useCatalog();
-  const featured = products.filter((p) => p.featured);
+  const wide = useMediaQuery('(min-width: 620px)');
+  const featured = products.filter((p) => p.featured).slice(0, wide ? HOME_CARDS.wide : HOME_CARDS.narrow);
+  // Ghee has the size gallery above, so it isn't counted as "more".
+  const more = products.filter((p) => !featured.includes(p) && p.id !== 'ghee');
   const ghee = products.find((p) => p.id === 'ghee');
   useReveal(root);
+  useTopOnArrival();
 
   useEffect(() => {
     if (sceneReady) writeFlag(INTRO_KEY);
@@ -88,7 +98,7 @@ export function NimmiSite() {
             </div>
             <ul className="size-grid">
               {SIZE_RANGE.map((s) => (
-                <li key={s.size} className={`size-item reveal${s.offCentre ? ' size-item--offset' : ''}`} style={{ '--scale': s.scale } as CSSProperties}>
+                <li key={s.size} className="size-item reveal" style={{ '--scale': s.scale } as CSSProperties}>
                   <div className="size-stage">
                     <img src={asset(GHEE_IMG[s.size])} alt={`Nimmi’s Pure Ghee, ${s.label} jar`} loading="lazy" />
                   </div>
@@ -121,6 +131,7 @@ export function NimmiSite() {
               {featured.map((p) => (
                 <ProductCard key={p.id} product={p} mode="link" />
               ))}
+              {products.length > 0 && <MoreProductsCard hidden={more} all={products} />}
             </div>
             <div className="sizes-close">
               <h3>Every jar carries a little tradition.</h3>
@@ -129,10 +140,10 @@ export function NimmiSite() {
                 <Link className="btn" to="/products">
                   See all products
                 </Link>
-                <a className="btn btn-ghost" href={waLink(sizeOrderMsg())} target="_blank" rel="noopener noreferrer" data-order="">
+                <OrderButton className="btn btn-ghost">
                   <ChatIcon />
                   Order on WhatsApp
-                </a>
+                </OrderButton>
               </div>
             </div>
           </div>
@@ -197,11 +208,7 @@ export function NimmiSite() {
             </div>
             <div className="uses">
               {USES.map((u) => (
-                <div key={u.title} className="use reveal">
-                  <span className="ml">{u.ml}</span>
-                  <h3>{u.title}</h3>
-                  <p>{u.text}</p>
-                </div>
+                <DishCard key={u.title} use={u} products={products} />
               ))}
             </div>
           </div>
@@ -216,13 +223,13 @@ export function NimmiSite() {
               Tap Order. We’ll take it from there.
             </h2>
             <div className="order-side">
-              <p>WhatsApp opens with your order already typed. Fill in your delivery address and send it. We reply with the price and delivery time, and pack your order once you confirm.</p>
+              <p>Pick your products and sizes, and WhatsApp opens with your order already typed. Fill in your delivery address and send it. We reply with the price and delivery time, and pack your order once you confirm.</p>
               <p>Ordering for family back home? Send their address instead of yours.</p>
               <div className="cta-row">
-                <a className="btn" href={waLink(GENERAL_ORDER)} target="_blank" rel="noopener noreferrer" data-order="">
+                <OrderButton>
                   <ChatIcon />
                   Order on WhatsApp
-                </a>
+                </OrderButton>
                 <a className="btn btn-ghost" href={MAPS_URL} target="_blank" rel="noopener noreferrer">
                   Find us on Google Maps
                 </a>
@@ -317,4 +324,21 @@ function useReveal(root: RefObject<HTMLElement>) {
     });
     return () => io.disconnect();
   }, [root, reduce]);
+}
+
+/**
+ * Coming in through a link from another page (the products page's Home links), start at the top.
+ * Going back with the browser or "Back to home" keeps the browser's own scroll position.
+ */
+function useTopOnArrival() {
+  const navType = useNavigationType();
+  useEffect(() => {
+    if (navType !== 'PUSH' || window.location.hash) return;
+    const html = document.documentElement;
+    html.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    html.style.scrollBehavior = '';
+    // Only on arrival.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }

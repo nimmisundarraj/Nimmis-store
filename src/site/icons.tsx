@@ -105,14 +105,14 @@ function useWordmarkFont() {
   return ready;
 }
 
-/** Bronze steps under the letters, top to bottom: the extruded depth of the cast. */
-const DEPTH = ['#9a6a26', '#7c521a', '#5f3d10', '#45290a'];
+/** Deep red steps under the outline, top to bottom: the extruded depth of the letters. */
+const DEPTH = ['#8a1a10', '#6e130b', '#530e08', '#3a0905'];
 
 /**
- * "Nimmi's" in Cooper Black as polished gold jewellery: the letters are eroded slightly so they read
- * lighter than the font's single Black weight, a banded gradient reads as mirror reflections, a narrow lit bevel puts a crisp highlight on every
- * edge, and stacked bronze layers give the letters depth. textLength keeps the width fixed even
- * while the font is still loading.
+ * "Nimmi's" in Cooper Black, coloured like the logo on the ghee jar: glossy red letters with a cream
+ * outline. The letters are eroded slightly so they read lighter than the font's single Black weight,
+ * a lit bevel puts a crisp highlight on every edge, and stacked deep red layers give them depth.
+ * textLength keeps the width fixed even while the font is still loading.
  */
 export function GoldWordmark({ className }: { className?: string }) {
   const id = useId().replace(/:/g, '');
@@ -120,7 +120,7 @@ export function GoldWordmark({ className }: { className?: string }) {
   return (
     <svg
       className={['gold-wordmark', className].filter(Boolean).join(' ')}
-      viewBox="0 0 458 112"
+      viewBox="0 0 500 112"
       data-ready={fontReady ? '' : undefined}
       aria-hidden="true"
       focusable="false"
@@ -132,8 +132,8 @@ export function GoldWordmark({ className }: { className?: string }) {
         x="6"
         y="84"
         fontSize="100"
-        textLength="443"
-        lengthAdjust="spacingAndGlyphs"
+        textLength="485"
+        lengthAdjust="spacing"
         fill={`url(#${id}-g)`}
         filter={`url(#${id}-f)`}
       >
@@ -143,50 +143,51 @@ export function GoldWordmark({ className }: { className?: string }) {
   );
 }
 
-/** The wordmark's polished gold: a banded gradient (`#<id>-g`) and the bevel and bronze-depth filter (`#<id>-f`), sized for ~100px type. */
+/** The wordmark's finish: a glossy red gradient (`#<id>-g`) and the bevel, cream outline and depth filter (`#<id>-f`), sized for ~100px type. */
 function GoldFinish({ id }: { id: string }) {
   const light = <feDistantLight azimuth={235} elevation={50} />;
-  const lift = { type: 'linear', slope: 0.35, intercept: 0.72 } as const;
+  const lift = { type: 'linear', slope: 0.3, intercept: 0.78 } as const;
   return (
     <>
-      <linearGradient id={`${id}-g`} x1="0" y1="0" x2=".25" y2="1">
-        <stop offset="0" stopColor="#fff4d2" />
-        <stop offset=".15" stopColor="#f0cd82" />
-        <stop offset=".33" stopColor="#b5843b" />
-        <stop offset=".43" stopColor="#563510" />
-        <stop offset=".52" stopColor="#9a6824" />
-        <stop offset=".64" stopColor="#f0cf86" />
-        <stop offset=".72" stopColor="#f9e2a6" />
-        <stop offset=".85" stopColor="#c08a3c" />
-        <stop offset="1" stopColor="#6a4413" />
+      <linearGradient id={`${id}-g`} x1="0" y1="0" x2=".2" y2="1">
+        <stop offset="0" stopColor="#ff6a48" />
+        <stop offset=".22" stopColor="#e8361f" />
+        <stop offset=".48" stopColor="#d42a1c" />
+        <stop offset=".62" stopColor="#b51d12" />
+        <stop offset=".8" stopColor="#d02818" />
+        <stop offset="1" stopColor="#9c170d" />
       </linearGradient>
-      <filter id={`${id}-f`} x="-4%" y="-20%" width="108%" height="160%" colorInterpolationFilters="sRGB">
-        {/* thin the shape (alpha only, so the gold keeps its colour); everything below builds on it */}
+      <filter id={`${id}-f`} x="-6%" y="-24%" width="112%" height="168%" colorInterpolationFilters="sRGB">
+        {/* thin the shape (alpha only, so the red keeps its colour); everything below builds on it */}
         <feMorphology in="SourceAlpha" operator="erode" radius={1.2} result="shape" />
         <feComposite in="SourceGraphic" in2="shape" operator="in" result="fill" />
         <feGaussianBlur in="shape" stdDeviation={0.9} result="bump" />
         <feDiffuseLighting in="bump" surfaceScale={2.6} diffuseConstant={1} lightingColor="#fff" result="diffuse">
           {light}
         </feDiffuseLighting>
-        {/* lift the shadow side so the edges stay gold instead of going muddy */}
+        {/* lift the shadow side so the edges stay red instead of going muddy */}
         <feComponentTransfer in="diffuse" result="shade">
           <feFuncR {...lift} />
           <feFuncG {...lift} />
           <feFuncB {...lift} />
         </feComponentTransfer>
         <feBlend in="fill" in2="shade" mode="multiply" result="shaded" />
-        <feSpecularLighting in="bump" surfaceScale={2.6} specularConstant={1} specularExponent={40} lightingColor="#fff7e0" result="spec">
+        <feSpecularLighting in="bump" surfaceScale={2.6} specularConstant={0.8} specularExponent={40} lightingColor="#ffe9dc" result="spec">
           {light}
         </feSpecularLighting>
         <feComposite in="spec" in2="shape" operator="in" result="shine" />
         <feComposite in="shaded" in2="shine" operator="arithmetic" k2={1} k3={1} result="lit" />
-        <feComposite in="lit" in2="shape" operator="in" result="gold" />
+        <feComposite in="lit" in2="shape" operator="in" result="face" />
+        {/* the cream outline round every letter, as on the jar's label */}
+        <feMorphology in="shape" operator="dilate" radius={3.2} result="ring" />
+        <feFlood floodColor="#fff1d0" />
+        <feComposite in2="ring" operator="in" result="outline" />
         {DEPTH.map((c, i) => [
-          <feOffset key={`o${i}`} in="shape" dy={1.3 * (i + 1)} result={`o${i}`} />,
+          <feOffset key={`o${i}`} in="ring" dy={1.3 * (i + 1)} result={`o${i}`} />,
           <feFlood key={`f${i}`} floodColor={c} />,
           <feComposite key={`c${i}`} in2={`o${i}`} operator="in" result={`d${i}`} />,
         ])}
-        <feGaussianBlur in="shape" stdDeviation={5} />
+        <feGaussianBlur in="ring" stdDeviation={5} />
         <feOffset dy={9} result="drop" />
         <feFlood floodColor="#000" floodOpacity={0.55} />
         <feComposite in2="drop" operator="in" result="cast" />
@@ -195,7 +196,8 @@ function GoldFinish({ id }: { id: string }) {
           {DEPTH.map((_, i) => (
             <feMergeNode key={i} in={`d${DEPTH.length - 1 - i}`} />
           ))}
-          <feMergeNode in="gold" />
+          <feMergeNode in="outline" />
+          <feMergeNode in="face" />
         </feMerge>
       </filter>
     </>

@@ -32,7 +32,7 @@ export function Hero({ sizesHref = '#sizes', storyHref = '#founders', onSceneRea
         <div className="hero3__scrim" aria-hidden="true" />
         <Leaf className="hero3__leaf hero3__leaf--tl" seed={1} />
         <div className="hero3__cowslot" data-away={scrolled ? '' : undefined}>
-          <CowPeek edge="bottom" zone="hero" say="Moo! Have you tried our ghee?" delay={3200} />
+          <CowPeek edge="bottom" zone="hero" say="Moo! Have you tried our ghee?" invite="Follow me to our ghee!" href={sizesHref} delay={3200} />
         </div>
         <div className="hero3__wrap">
           <div className="hero3__copy">

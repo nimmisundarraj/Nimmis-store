@@ -12,6 +12,10 @@ type Props = {
   zone?: string;
   /** Extra wait after scrolling into view, in ms. */
   delay?: number;
+  /** Makes her a guide: tapping her follows this link (e.g. "#sizes"). */
+  href?: string;
+  /** A line she keeps saying once she is up, inviting a tap; `say` still plays on hover. */
+  invite?: string;
   className?: string;
   style?: CSSProperties;
 };
@@ -22,7 +26,7 @@ const MOOD_LINES = { excited: 'Moo! Good choice!', happy: 'Opening WhatsApp…' 
  * The cow peeking in from the edge of a section. Slides in when the section scrolls into
  * view, says hello on hover, and gets excited about Order buttons in her zone.
  */
-export function CowPeek({ edge = 'bottom', say = 'Moo!', zone, delay = 400, className, style }: Props) {
+export function CowPeek({ edge = 'bottom', say = 'Moo!', zone, delay = 400, href, invite, className, style }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const inView = useInView(ref, { threshold: 0.2 });
@@ -46,7 +50,7 @@ export function CowPeek({ edge = 'bottom', say = 'Moo!', zone, delay = 400, clas
   };
 
   const pose = edge === 'bottom' ? (mood === 'excited' ? 'cow-peek-excited' : mood === 'happy' ? 'cow-peek-happy' : 'cow-peek') : 'cow-peek-side';
-  const line = mood !== 'idle' ? MOOD_LINES[mood] : talking ? say : '';
+  const line = mood !== 'idle' ? MOOD_LINES[mood] : talking ? say : shown && invite ? invite : '';
 
   return (
     <div
@@ -64,6 +68,7 @@ export function CowPeek({ edge = 'bottom', say = 'Moo!', zone, delay = 400, clas
         </div>
         {mood === 'happy' && <Hearts />}
       </div>
+      {href && <a className="cow-peek__link" href={href} aria-label={invite ?? say} />}
       <span className="bubble cow-peek__bubble" data-show={line ? '' : undefined} aria-live="polite">
         {line}
       </span>

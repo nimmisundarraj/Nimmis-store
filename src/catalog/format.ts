@@ -23,4 +23,20 @@ export function priceSummary(p: CatalogProduct): string | null {
   return prices.some((n) => n !== min) ? `From ${rupees(min)}` : rupees(min);
 }
 
-export const inStock = (p: CatalogProduct) => !p.variants.length || p.variants.some((v) => v.inStock);
+/** Whole percent off the MRP, or null when there is no MRP above the price. */
+export function percentOff(price: number, mrp?: number | null): number | null {
+  if (mrp == null || mrp <= price) return null;
+  const off = Math.round(((mrp - price) / mrp) * 100);
+  return off > 0 ? off : null;
+}
+
+/** The cheapest priced size (and its MRP), with `from` set when sizes differ in price. */
+export function lowestPrice(p: CatalogProduct): { price: number; mrp: number | null; from: boolean } | null {
+  const priced = p.variants.filter((v): v is Variant & { price: number } => typeof v.price === 'number');
+  if (!priced.length) return null;
+  const pool = priced.some((v) => v.inStock) ? priced.filter((v) => v.inStock) : priced;
+  const low = pool.reduce((a, b) => (b.price < a.price ? b : a));
+  return { price: low.price, mrp: low.mrp ?? null, from: priced.some((v) => v.price !== low.price) };
+}
+
+export const inStock =(p: CatalogProduct) => !p.variants.length || p.variants.some((v) => v.inStock);

@@ -11,7 +11,7 @@ const WHATSAPP = WA_DIGITS.length === 10 ? `91${WA_DIGITS}` : WA_DIGITS;
 export const waLink = (text: string) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
 /** Every order message ends with this blank address form, so the customer sends everything we need to deliver in one go. */
-const DELIVERY_FORM = [
+export const DELIVERY_FORM = [
   '',
   'Delivery address:',
   'Name: ',
@@ -44,15 +44,15 @@ export const GHEE_IMG: Record<GheeSize, string> = {
 
 /**
  * The size gallery. `scale` is the photo's height against its image stage, so the six keep their real
- * order without the small ones vanishing. `offCentre`: the photo frames the jar left of centre, so the gallery nudges it back.
+ * order without the small ones vanishing.
  */
-export const SIZE_RANGE: { size: GheeSize; label: string; note: string; scale: number; offCentre?: boolean }[] = [
-  { size: '50 ml', label: '50 ml', note: 'A little taste', scale: 0.68 },
-  { size: '100 ml', label: '100 ml', note: 'For everyday moments', scale: 0.75 },
-  { size: '200 ml', label: '200 ml', note: 'A little more goodness', scale: 0.82 },
-  { size: '500 ml', label: '500 ml', note: 'For the family table', scale: 0.9, offCentre: true },
-  { size: '1 L', label: '1 litre', note: 'For regular cooking', scale: 0.97, offCentre: true },
-  { size: '2 L', label: '2 litres', note: 'For the whole family', scale: 1.04, offCentre: true },
+export const SIZE_RANGE: { size: GheeSize; label: string; note: string; scale: number }[] = [
+  { size: '50 ml', label: '50 ml', note: 'A little taste', scale: 0.76 },
+  { size: '100 ml', label: '100 ml', note: 'For everyday moments', scale: 0.84 },
+  { size: '200 ml', label: '200 ml', note: 'A little more goodness', scale: 0.92 },
+  { size: '500 ml', label: '500 ml', note: 'For the family table', scale: 1.01 },
+  { size: '1 L', label: '1 litre', note: 'For regular cooking', scale: 1.09 },
+  { size: '2 L', label: '2 litres', note: 'For the whole family', scale: 1.16 },
 ];
 
 /** "2 litres" reads as "your 2 litre ghee" inside the sentence. */
@@ -61,11 +61,41 @@ export const sizeOrderMsg = (label?: string) =>
 
 export type Illustration = 'almond' | 'pista' | 'raisins' | 'cashew' | 'anise';
 
-export const USES = [
-  { ml: 'ബിരിയാണി', title: 'Thalassery biriyani', text: 'Kaima rice fried in ghee before the dum. The smell that brings everyone to the table.' },
-  { ml: 'പായസം', title: 'Payasam', text: 'Cashews and raisins fried golden in a spoon of ghee, poured over at the end.' },
-  { ml: 'ദോശ', title: 'Ghee roast dosa', text: 'A thin layer brushed on the hot tawa for a crisp, glossy dosa.' },
-  { ml: 'നിലവിളക്ക്', title: 'The evening lamp', text: 'In many homes, a little ghee lights the nilavilakku at dusk.' },
+/**
+ * The dishes section. `needs` are catalog product ids (with a size when one fits the dish best);
+ * ids missing from the catalog or out of stock are simply left off the card.
+ */
+export type Use = { ml: string; title: string; text: string; img: string; needs: { id: string; size?: string }[] };
+
+export const USES: Use[] = [
+  {
+    ml: 'ബിരിയാണി',
+    title: 'Thalassery biriyani',
+    text: 'Kaima rice fried in ghee before the dum. The smell that brings everyone to the table.',
+    img: 'dish-biriyani.webp',
+    needs: [{ id: 'ghee' }, { id: 'cashew' }, { id: 'black-raisins' }],
+  },
+  {
+    ml: 'പായസം',
+    title: 'Payasam',
+    text: 'Cashews and raisins fried golden in a spoon of ghee, poured over at the end.',
+    img: 'dish-payasam.webp',
+    needs: [{ id: 'ghee' }, { id: 'cashew' }, { id: 'white-raisins' }],
+  },
+  {
+    ml: 'ദോശ',
+    title: 'Ghee roast dosa',
+    text: 'A thin layer brushed on the hot tawa for a crisp, glossy dosa.',
+    img: 'dish-dosa.webp',
+    needs: [{ id: 'ghee', size: '500 ml' }],
+  },
+  {
+    ml: 'നിലവിളക്ക്',
+    title: 'The evening lamp',
+    text: 'In many homes, a little ghee lights the nilavilakku at dusk.',
+    img: 'dish-lamp.webp',
+    needs: [{ id: 'ghee', size: '1 L' }],
+  },
 ];
 
 /** Fill these in once; the founders section, its alt text and signature all read from here. */

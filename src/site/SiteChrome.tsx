@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { Link } from 'react-router-dom';
-import { asset, GENERAL_ORDER, waLink } from './content';
+import { asset } from './content';
 import { ChatIcon, GoldWordmark } from './icons';
+import { OrderButton, OrderPicker } from './OrderPicker';
 
 export type NavLink = { href: string; label: string };
 
@@ -31,54 +32,51 @@ export function SiteHeader({ nav, brandHref }: { nav: NavLink[]; brandHref: stri
     </>
   );
 
+  // The order sheet sits beside the header, so header styles (pointer-events, transforms) never reach it.
   return (
-    <header className="site-header" ref={header} data-compact={compactNav ? '' : undefined}>
-      <div className="nav-pill">
-        {brandHref.startsWith('#') ? (
-          <a className="brand" href={brandHref} aria-label="Nimmi's Products, home">
-            {brand}
-          </a>
-        ) : (
-          <Link className="brand" to={brandHref} aria-label="Nimmi's Products, home">
-            {brand}
-          </Link>
-        )}
-        <nav className="nav" aria-label="Main">
+    <>
+      <header className="site-header" ref={header} data-compact={compactNav ? '' : undefined}>
+        <div className="nav-pill">
+          {brandHref.startsWith('#') ? (
+            <a className="brand" href={brandHref} aria-label="Nimmi's Products, home">
+              {brand}
+            </a>
+          ) : (
+            <Link className="brand" to={brandHref} aria-label="Nimmi's Products, home">
+              {brand}
+            </Link>
+          )}
+          <nav className="nav" aria-label="Main">
+            {nav.map((l) => (
+              <NavItem key={l.href} link={l} />
+            ))}
+          </nav>
+          <OrderButton className="btn btn-sm nav-cta" label="Order on WhatsApp">
+            <ChatIcon />
+            <span>
+              Order<span className="nav-cta__more"> on WhatsApp</span>
+            </span>
+          </OrderButton>
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <span aria-hidden="true" />
+          </button>
+          <div className="progress" aria-hidden="true" />
+        </div>
+        <nav id="site-menu" className="nav-menu" aria-label="Main" hidden={!menuOpen}>
           {nav.map((l) => (
-            <NavItem key={l.href} link={l} />
+            <NavItem key={l.href} link={l} onClick={() => setMenuOpen(false)} />
           ))}
         </nav>
-        <a
-          className="btn btn-sm nav-cta"
-          href={waLink(GENERAL_ORDER)}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Order on WhatsApp"
-          data-order=""
-        >
-          <ChatIcon />
-          <span>
-            Order<span className="nav-cta__more"> on WhatsApp</span>
-          </span>
-        </a>
-        <button
-          type="button"
-          className="nav-toggle"
-          aria-expanded={menuOpen}
-          aria-controls="site-menu"
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          <span aria-hidden="true" />
-        </button>
-        <div className="progress" aria-hidden="true" />
-      </div>
-      <nav id="site-menu" className="nav-menu" aria-label="Main" hidden={!menuOpen}>
-        {nav.map((l) => (
-          <NavItem key={l.href} link={l} onClick={() => setMenuOpen(false)} />
-        ))}
-      </nav>
-    </header>
+      </header>
+      <OrderPicker />
+    </>
   );
 }
 

@@ -95,7 +95,7 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 .brand-mark { display: block; width: auto; height: 40px; flex: none; transition: height .45s cubic-bezier(.16, 1, .3, 1); }
 .site-header[data-compact] .brand-mark { height: 32px; }
 /* The navbar wordmark is an SVG (GoldWordmark); sized so its letters match the old 1.85rem type. */
-.gold-wordmark { display: block; height: 2.1rem; width: auto; aspect-ratio: 458 / 112; overflow: visible; flex: none; }
+.gold-wordmark { display: block; height: 2.1rem; width: auto; aspect-ratio: 500 / 112; overflow: visible; flex: none; }
 .gold-wordmark text { font-family: var(--f-wordmark); }
 /* hidden until the Cooper font has loaded (see useWordmarkFont), then a short fade in; the box keeps its size meanwhile */
 .gold-wordmark { opacity: 0; transition: opacity .25s ease-out; }
@@ -133,6 +133,8 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 @media (max-width: 480px) { .nav-cta__more { display: none; } }
 @media (max-width: 1000px) { .brand-sub { display: none; } }
 @media (max-width: 440px) { .brand .wordmark { font-size: 1.45rem; } .brand-mark { height: 34px; } }
+/* on phones the wordmark shrinks with the screen so it never runs under the Order button */
+@media (max-width: 440px) { .site-header .gold-wordmark { height: clamp(1.2rem, (100vw - 268px) * .224, 2.1rem); } }
 @media (prefers-reduced-motion: reduce) { .site-header, .nav-pill, .brand-mark, .nav-toggle span, .nav-toggle span::before { transition: none; } }
 .progress { position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--gold); transform-origin: left; transform: scaleX(0); }
 @supports (animation-timeline: scroll()) { .progress { animation: grow linear both; animation-timeline: scroll(root); } @keyframes grow { to { transform: scaleX(1); } } }
@@ -177,7 +179,7 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 .reveal { transition: transform 1s cubic-bezier(.16, 1, .3, 1); }
 .reveal[data-reveal="waiting"] { transform: translateY(56px); }
 
-/* sizes: six jars in a quiet gallery. Every stage is the same height and the jars stand on its floor,
+/* sizes: six jars in a quiet gallery. Every stage is the same height with its jar centred in it,
    so the real step from 50 ml up to 2 litres reads at a glance. */
 .lineup-sec { position: relative; background: var(--bg-page); padding-block: var(--space-xl) 0; overflow: clip; }
 .lineup-sec .section-head { margin-bottom: var(--space-m); }
@@ -189,15 +191,16 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
   transition: transform 1s cubic-bezier(.16, 1, .3, 1), background .3s, border-color .3s;
 }
 .size-item:hover, .size-item:focus-within { background: color-mix(in srgb, var(--forest-3) 70%, transparent); border-color: color-mix(in srgb, var(--gold) 34%, transparent); }
-.size-stage { height: var(--stage); display: flex; align-items: flex-end; justify-content: center; overflow: clip; border-bottom: 1px solid color-mix(in srgb, var(--gold) 22%, transparent); }
+/* a white studio panel, so the jars read like product shots; each jar sits in its centre */
+.size-stage {
+  height: calc(var(--stage) * 1.1);
+  display: flex; align-items: center; justify-content: center; overflow: clip; border-radius: 12px;
+  background: radial-gradient(120% 90% at 50% 30%, #fff 55%, #f3ede0);
+}
 .size-stage img {
   display: block; height: calc(var(--stage) * var(--scale)); width: auto; max-width: none;
-  /* each photo carries ~10% clear space under the jar; pull it down so every jar meets the floor line */
-  margin-bottom: calc(var(--stage) * var(--scale) * -0.09);
-  filter: drop-shadow(0 12px 10px rgba(0, 0, 0, .4)); transition: transform .45s cubic-bezier(.2, .8, .2, 1);
+  filter: drop-shadow(0 10px 8px rgba(90, 60, 0, .22)); transition: transform .45s cubic-bezier(.2, .8, .2, 1);
 }
-/* the 500 ml, 1 L and 2 L photos sit left of centre in their frames; this centres the jar itself */
-.size-item--offset .size-stage img { translate: 20.5% 0; }
 .size-item:hover .size-stage img, .size-item:focus-within .size-stage img { transform: translateY(-6px); }
 .size-info { display: grid; gap: 0.2rem; align-content: start; }
 .nimmi-site .size-qty { font-size: var(--step-2); font-weight: 400; color: var(--cream); font-variant-numeric: lining-nums; }
@@ -253,7 +256,8 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 .card:hover .card-art svg, .card:hover .card-art .art-img { transform: translateZ(40px) scale(1.05) translateY(-2%); }
 .card-tag { position: absolute; z-index: 2; top: 0.8rem; left: 0.8rem; font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3em 0.7em; border-radius: 999px; background: rgba(7, 19, 12, .7); color: var(--cream-dim); backdrop-filter: blur(6px); }
 .card-tag.real { background: rgba(217, 168, 74, .16); color: var(--gold-hi); }
-.card-body { display: grid; gap: 0.7rem; padding: 1.15rem 1.15rem 1.25rem; align-content: start; }
+/* a column whose footer is pushed to the bottom, so prices and buttons line up across a row of cards */
+.card-body { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.15rem 1.15rem 1.25rem; }
 .card-title { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
 .card h3 { font-size: var(--step-2); font-weight: 400; }
 .card .ml { color: var(--gold); font-size: 1.02rem; }
@@ -262,7 +266,7 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 .size { font: 500 0.82rem/1 var(--f-mono); padding: 0.55em 0.8em; border-radius: 8px; background: transparent; color: var(--cream); border: 1.5px solid var(--line); cursor: pointer; transition: background .2s, border-color .2s, color .2s; }
 .size:hover { border-color: var(--cream-faint); }
 .size[aria-pressed="true"] { background: var(--cream); border-color: var(--cream); color: var(--forest-0); }
-.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; padding-top: 0.6rem; border-top: 1.5px solid var(--line); }
+.card-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.6rem; border-top: 1.5px solid var(--line); }
 .price { font-family: var(--f-mono); font-size: 0.8rem; color: var(--cream-faint); }
 .price b { font-family: var(--f-display); font-weight: 400; font-size: 1.25rem; color: var(--cream); margin-right: 0.3rem; }
 @media (min-width: 620px) {
@@ -274,13 +278,31 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 
 /* where it goes */
 .uses-sec { background: var(--bg-page); }
-.uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--space-s); }
-.use { container-type: inline-size; min-width: 0; background: var(--forest-1); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-m); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; align-content: start; transition: transform .3s cubic-bezier(.2,.9,.25,1.3), border-color .3s; }
+.uses { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-s); }
+@media (min-width: 560px) { .uses { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .uses { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.use { min-width: 0; overflow: hidden; background: var(--forest-1); border: 1px solid var(--line); border-radius: var(--radius); display: flex; flex-direction: column; transition: transform .3s cubic-bezier(.2,.9,.25,1.3), border-color .3s; }
+.use__img { aspect-ratio: 4 / 3; overflow: hidden; background: var(--forest-3); }
+.use__img img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .8s cubic-bezier(.2, .8, .2, 1); }
+.use:hover .use__img img { transform: scale(1.05); }
+/* a column whose shopping part sits at the bottom, so the four cards line up */
+.use__body { container-type: inline-size; flex: 1; display: flex; flex-direction: column; gap: 0.5rem; padding: var(--space-s) var(--space-m) var(--space-m); }
+.use__shop { display: grid; justify-items: start; gap: 0.6rem; margin-top: auto; padding-top: 0.9rem; border-top: 1px solid var(--line); }
+.use__label { font: 600 0.72rem/1.2 var(--f-body); letter-spacing: 0.1em; text-transform: uppercase; color: var(--cream-faint); }
+.use__needs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.use__pill {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 0.85rem; border-radius: 999px; text-decoration: none;
+  gap: 0.45rem; font: 500 0.85rem/1 var(--f-body); border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); transition: background .2s, color .2s, border-color .2s;
+}
+.use__size { padding-left: 0.45rem; border-left: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); font: 500 0.78rem/1 var(--f-mono); color: var(--cream-dim); }
+.nimmi-site .use__pill { color: var(--gold-hi); }
+.nimmi-site .use__pill:hover { background: color-mix(in srgb, var(--gold) 16%, transparent); border-color: var(--gold); color: var(--cream); }
+.use__add { justify-self: center; margin-top: 0.2rem; white-space: nowrap; }
 .use:hover { transform: translateY(-4px); border-color: rgba(217, 168, 74, .4); }
-/* the Malayalam word scales with its card so the longest (നിലവിളക്ക്) still fits on one line */
-.use .ml { font-size: min(var(--step-3), 18.5cqi); color: var(--gold-hi); line-height: 1.15; white-space: nowrap; }
+/* the Malayalam word scales with the card's text column so the longest (നിലവിളക്ക്) fits on one line with room to spare */
+.use .ml { font-size: min(var(--step-2), 13cqi); color: var(--gold-hi); line-height: 1.15; white-space: nowrap; }
 .use h3 { font-size: var(--step-1); }
-.use p { color: var(--cream-dim); font-size: 0.95rem; }
+.use p { margin: 0; color: var(--cream-dim); font-size: 0.95rem; }
 
 /* our story: the founders, with the shop board in front of them */
 #shop { background: var(--bg-page); }
@@ -385,14 +407,15 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 }
 
 /* catalog: prices, stock and the home page's preview cards */
-.price .mrp { margin-left: 0.45rem; font-size: 0.85rem; color: var(--cream-faint); }
+.price { display: inline-flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.45rem; row-gap: 0.2rem; }
+.price b { margin-right: 0; }
+.price-from { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.price .mrp { font-size: 0.9rem; color: var(--cream-faint); text-decoration: line-through; text-decoration-color: rgba(200, 38, 27, .85); text-decoration-thickness: 1.5px; }
+.price-off { align-self: center; font: 600 0.7rem/1 var(--f-body); letter-spacing: 0.04em; padding: 0.35em 0.6em; border-radius: 999px; color: var(--forest-0); background: linear-gradient(135deg, var(--gold-hi), var(--gold)); white-space: nowrap; }
 .price-out { color: var(--gold-hi); letter-spacing: 0.06em; text-transform: uppercase; }
 .size:disabled { opacity: .4; text-decoration: line-through; cursor: not-allowed; }
 .size:disabled:hover { border-color: var(--line); }
 .card.is-out .card-art { filter: grayscale(.6); opacity: .75; }
-/* on the home page the whole card opens the product on the products page */
-.card-link::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: var(--radius); }
-.card:has(.card-link) { cursor: pointer; }
 .card.is-highlight { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 30px 60px -30px rgba(242, 200, 107, .55); animation: card-ring 1.6s ease-out 0.4s 2; }
 @keyframes card-ring { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 35%, transparent), 0 30px 60px -30px rgba(242, 200, 107, .55); } }
 .size-price { margin: 0.2rem 0 0; font: 400 var(--step-1)/1.2 var(--f-display); color: var(--gold-hi); }
@@ -401,6 +424,16 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 
 /* the products page */
 .shop-page .shop { padding-top: calc(var(--header-h, 76px) + var(--space-l)); min-height: 100vh; min-height: 100svh; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; margin: 0 0 var(--space-s, 1rem) -0.35rem; padding: 0 0.9rem 0 0.5rem;
+  border-radius: 999px; text-decoration: none; font: 600 0.95rem/1 var(--f-body); color: var(--cream-dim);
+  border: 1px solid var(--line); transition: color .2s, border-color .2s, background .2s;
+}
+.back-link svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .2s; }
+.back-link:hover { color: var(--cream); border-color: var(--cream-faint); background: var(--forest-2); }
+.back-link:hover svg { transform: translateX(-3px); }
+.nimmi-site .back-link { color: var(--cream-dim); }
+.nimmi-site .back-link:hover { color: var(--cream); }
 .shop-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; margin-bottom: var(--space-m); }
 .shop-search { flex: 1 1 260px; max-width: 420px; }
 .shop-search input {
@@ -419,3 +452,94 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 .card-skeleton { min-height: 420px; background: linear-gradient(100deg, var(--forest-2) 30%, var(--forest-3) 50%, var(--forest-2) 70%) 0 0 / 300% 100%; animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { to { background-position: -150% 0; } }
 @media (prefers-reduced-motion: reduce) { .card.is-highlight, .card-skeleton { animation: none; } }
+
+/* the order sheet: a bottom sheet on phones, a centred panel on wider screens */
+html:has(.order-sheet[open]) { overflow: hidden; }
+.order-sheet {
+  width: min(560px, 100%); max-width: 100%; max-height: min(88dvh, 760px); margin: auto auto 0; padding: 0;
+  --sheet-pad: clamp(1.4rem, 1rem + 2vw, 2.25rem);
+  border: 1px solid color-mix(in srgb, var(--gold) 28%, transparent); border-radius: 22px 22px 0 0; overflow: hidden;
+  /* the footer's colour, so it always reaches the bottom edge; the head and list paint their own */
+  background: var(--forest-2); color: var(--cream); box-shadow: 0 -20px 60px -20px rgb(0 0 0 / .8);
+}
+.order-sheet[open] { display: flex; flex-direction: column; animation: sheet-in .35s cubic-bezier(.16, 1, .3, 1); }
+.order-sheet::backdrop { background: rgb(3 8 5 / .65); backdrop-filter: blur(4px); }
+@keyframes sheet-in { from { transform: translateY(32px); opacity: 0; } }
+@media (min-width: 640px) { .order-sheet { margin: auto; border-radius: var(--radius); } }
+.order-sheet__head { position: relative; padding: var(--sheet-pad) calc(var(--sheet-pad) + 52px) calc(var(--sheet-pad) * 0.8) var(--sheet-pad); border-bottom: 1px solid var(--line); background: var(--forest-1); }
+.nimmi-site .order-sheet__head h2 { font-size: var(--step-2); font-weight: 400; }
+.order-sheet__head p { margin: 0.6rem 0 0; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.45; }
+.order-sheet__close {
+  position: absolute; top: calc(var(--sheet-pad) * 0.7); right: calc(var(--sheet-pad) * 0.7); display: grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--cream); cursor: pointer; transition: background .2s;
+}
+.order-sheet__close:hover { background: var(--forest-3); }
+.order-sheet__close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.order-sheet__list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0.5rem var(--sheet-pad) var(--sheet-pad); background: var(--forest-1); }
+.order-sheet__empty { color: var(--cream-dim); }
+.order-sheet__more { margin: 0; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--cream-dim); font-size: 0.95rem; }
+.nimmi-site .order-sheet__more a { color: var(--gold-hi); font-weight: 700; text-underline-offset: 3px; }
+.order-pick { padding-block: 1.25rem; border-bottom: 1px solid var(--line); scroll-margin-top: 0.5rem; }
+.order-pick:last-of-type { border-bottom: 0; }
+.order-pick.is-focus { margin-inline: -1rem; padding-inline: 1rem; border-radius: 16px; background: color-mix(in srgb, var(--gold) 10%, transparent); }
+.order-pick__head { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.9rem; }
+.order-pick__head img, .order-pick__thumb { width: 52px; height: 52px; flex: none; border-radius: 12px; object-fit: cover; background: var(--forest-3); }
+.nimmi-site .order-pick h3 { font-size: var(--step-1); font-weight: 400; }
+.order-pick .ml { color: var(--gold); font-size: 0.9rem; }
+.order-pick__sizes { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+.order-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 0.8rem; min-height: 52px;
+  padding: 0.4rem 0.45rem 0.4rem 1rem; border-radius: 12px; border: 1px solid var(--line); transition: background .2s, border-color .2s;
+}
+.order-row[data-picked] { border-color: color-mix(in srgb, var(--gold) 55%, transparent); background: color-mix(in srgb, var(--gold) 8%, transparent); }
+.order-row.is-out { opacity: 0.5; }
+.order-row__size { font: 500 0.88rem/1.2 var(--f-mono); }
+.order-row__price { font: 400 1.05rem/1.2 var(--f-display); }
+.order-row__price.is-muted { font: 500 0.8rem/1.2 var(--f-body); color: var(--cream-faint); }
+.order-add {
+  min-height: 40px; padding: 0 1.15rem; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--gold) 60%, transparent);
+  background: transparent; color: var(--gold-hi); font: 700 0.88rem/1 var(--f-body); cursor: pointer; transition: background .2s, color .2s;
+}
+.order-add:hover { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: var(--forest-deep); border-color: transparent; }
+.stepper { display: inline-flex; align-items: center; gap: 0.2rem; }
+.stepper button {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--cream-faint);
+  background: transparent; color: var(--cream); font: 600 1.15rem/1 var(--f-body); cursor: pointer; transition: background .2s, color .2s;
+}
+.stepper button:hover:not(:disabled) { background: var(--cream); color: var(--forest-0); }
+.stepper button:disabled { opacity: 0.4; cursor: not-allowed; }
+.stepper output { min-width: 2ch; text-align: center; font: 600 1rem/1 var(--f-mono); }
+.order-sheet__foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.8rem 1rem; flex-wrap: wrap;
+  padding: calc(var(--sheet-pad) * 0.75) var(--sheet-pad) calc(var(--sheet-pad) * 0.75 + env(safe-area-inset-bottom)); border-top: 1px solid var(--line);
+}
+.order-sheet__sum { margin: 0; display: flex; align-items: baseline; gap: 0.6rem; color: var(--cream-dim); }
+.order-sheet__sum b { font: 400 1.35rem/1 var(--f-display); color: var(--cream); }
+@media (max-width: 440px) { .order-sheet__foot .btn { flex: 1 1 100%; justify-content: center; } }
+
+/* the home grid's last tile: a collage of what else is in the shop */
+.more-card { text-decoration: none; color: var(--cream); cursor: pointer; }
+.more-card:hover { border-color: color-mix(in srgb, var(--gold) 45%, transparent); }
+.more-card__art {
+  position: relative; aspect-ratio: 4 / 3; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 6px;
+  overflow: hidden; border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0; background: var(--forest-3);
+}
+/* one photo fills the frame, two sit side by side, three put the first one tall on the left */
+.more-card__art[data-tiles="1"] { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+.more-card__art[data-tiles="2"] { grid-template-rows: 1fr; }
+.more-card__art[data-tiles="3"] .more-card__tile:first-child { grid-row: span 2; }
+.more-card__tile { position: relative; overflow: hidden; border-radius: 12px; background: var(--forest-2); }
+.more-card__tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2, .8, .2, 1); }
+.more-card:hover .more-card__tile img { transform: scale(1.06); }
+/* the count sits on a dark pool in the middle of the collage */
+.more-card__art:has(.more-card__count)::after { content: ""; position: absolute; inset: 0; background: radial-gradient(45% 50% at 50% 50%, rgb(5 12 7 / .78), rgb(5 12 7 / .25) 70%, transparent); pointer-events: none; }
+.more-card__count {
+  position: absolute; z-index: 1; inset: 0; display: grid; place-items: center;
+  font: 300 clamp(3rem, 2rem + 4vw, 4.6rem)/1 var(--f-display); color: var(--gold-hi); text-shadow: 0 4px 24px rgb(0 0 0 / .6);
+}
+.more-card__body { display: flex; flex-direction: column; gap: 0.7rem; padding: 1.15rem 1.15rem 1.25rem; }
+.nimmi-site .more-card h3 { font-size: var(--step-2); font-weight: 400; }
+.more-card__body p { margin: 0; color: var(--cream-dim); font-size: 0.95rem; line-height: 1.5; }
+.more-card__cta { align-self: flex-start; margin-top: auto; }
+.more-card:hover .more-card__cta { transform: translateY(-2px); }
+@container (min-width: 420px) { .more-card__body { padding: 1.4rem 1.5rem 1.5rem; } }
