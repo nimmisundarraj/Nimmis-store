@@ -31,7 +31,7 @@ export function DishCard({ use, products }: { use: Use; products: CatalogProduct
             <ul className="use__needs">
               {items.map(({ product, size, showSize }) => (
                 <li key={product.id}>
-                  <Link className="use__pill" to={`/products?item=${encodeURIComponent(product.id)}`}>
+                  <Link className="use__pill" to={`/products?item=${encodeURIComponent(product.id)}`} state={{ from: 'dish-pill' }}>
                     {product.name}
                     {showSize && <span className="use__size">{size}</span>}
                   </Link>

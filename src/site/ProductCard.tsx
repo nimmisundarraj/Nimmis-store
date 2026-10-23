@@ -109,8 +109,8 @@ export function ProductCard({ product: p, mode = 'order', highlight }: { product
             ))}
           </div>
         )}
-        <div className="card-foot">
-          {mode === 'order' ? <VariantPrice variant={variant} /> : low ? <PriceTag price={low.price} mrp={low.mrp} from={low.from} /> : <span className="price"><b>₹</b>Price on WhatsApp</span>}
+        <div className={['card-foot', mode === 'link' && 'card-foot--link'].filter(Boolean).join(' ')}>
+          {mode === 'order' ? <VariantPrice variant={variant} /> : low ? <PriceTag price={low.price} mrp={low.mrp} from={low.from} size={low.label} sizes={p.variants.length} /> : <span className="price"><b>₹</b>Price on WhatsApp</span>}
           {mode === 'link' ? (
             <OrderButton product={p.id} className="btn btn-sm">
               <ChatIcon />
@@ -143,8 +143,11 @@ function VariantPrice({ variant }: { variant?: Variant }) {
   return <PriceTag price={variant.price} mrp={variant.mrp} />;
 }
 
-/** The selling price, the MRP struck through beside it, and how much is saved. */
-function PriceTag({ price, mrp, from }: { price: number; mrp?: number | null; from?: boolean }) {
+/**
+ * The selling price, the MRP struck through beside it, and how much is saved. `size` names the
+ * pack the price is for (the home page's cards have no size buttons), with a count when there are more.
+ */
+function PriceTag({ price, mrp, from, size, sizes = 1 }: { price: number; mrp?: number | null; from?: boolean; size?: string; sizes?: number }) {
   const off = percentOff(price, mrp);
   return (
     <span className="price">
@@ -153,9 +156,15 @@ function PriceTag({ price, mrp, from }: { price: number; mrp?: number | null; fr
       {off != null && (
         <>
           <s className="mrp" aria-label={`MRP ${rupees(mrp!)}`}>{rupees(mrp!)}</s>
-          <span className="price-off">{off}% off</span>
         </>
       )}
+      {size && (
+        <span className="price-size">
+          for {size}
+          {sizes > 1 && ` · ${sizes} sizes`}
+        </span>
+      )}
+      {off != null && <span className="price-off">{off}% off</span>}
     </span>
   );
 }

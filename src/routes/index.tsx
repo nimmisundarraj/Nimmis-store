@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { usePageViews } from "../lib/analytics";
 import { Home } from "../components/Home/Home";
 import CowBuddyShowcase from "../pages/CowBuddyShowcase";
 import { NimmiSite } from "../site/NimmiSite";
@@ -9,9 +10,15 @@ import { ProductsPage } from "../site/ProductsPage";
 // Firebase Auth and the admin screens load only when someone opens /admin.
 const AdminApp = lazy(() => import("../admin/AdminApp"));
 
+function PageViews() {
+  usePageViews();
+  return null;
+}
+
 const routes = () => {
   return (
     <Router>
+      <PageViews />
       <Routes>
         <Route path="/" element={<NimmiSite />} />
         <Route path="/classic" element={<Home />} />

@@ -407,11 +407,14 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 }
 
 /* catalog: prices, stock and the home page's preview cards */
-.price { display: inline-flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.45rem; row-gap: 0.2rem; }
+.price { display: inline-flex; flex: 1 1 auto; align-items: baseline; flex-wrap: wrap; column-gap: 0.45rem; row-gap: 0.2rem; }
 .price b { margin-right: 0; }
 .price-from { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
 .price .mrp { font-size: 0.9rem; color: var(--cream-faint); text-decoration: line-through; text-decoration-color: rgba(200, 38, 27, .85); text-decoration-thickness: 1.5px; }
-.price-off { align-self: center; font: 600 0.7rem/1 var(--f-body); letter-spacing: 0.04em; padding: 0.35em 0.6em; border-radius: 999px; color: var(--forest-0); background: linear-gradient(135deg, var(--gold-hi), var(--gold)); white-space: nowrap; }
+/* the home page's cards: the button sits on its own row under the price, centred */
+.card-foot--link > .btn { margin-inline: auto; }
+.price-size { font: 500 0.8rem/1.2 var(--f-body); color: var(--cream-dim); white-space: nowrap; }
+.price-off { align-self: center; margin-left: auto; font: 600 0.7rem/1 var(--f-body); letter-spacing: 0.04em; padding: 0.35em 0.6em; border-radius: 999px; color: var(--forest-0); background: linear-gradient(135deg, var(--gold-hi), var(--gold)); white-space: nowrap; }
 .price-out { color: var(--gold-hi); letter-spacing: 0.06em; text-transform: uppercase; }
 .size:disabled { opacity: .4; text-decoration: line-through; cursor: not-allowed; }
 .size:disabled:hover { border-color: var(--line); }
