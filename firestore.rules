@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// Deploy with: npx firebase-tools deploy --only firestore:rules
+// (or paste this into Firebase console > Firestore Database > Rules and Publish).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // An admin is a signed in user with a document at admins/{their uid}, created by hand in the console.
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function validProduct(p) {
+      return p.name is string && p.name.size() > 0 && p.name.size() <= 120
+        && p.category is string && p.category.size() > 0
+        && p.active is bool
+        && p.featured is bool
+        && p.sortOrder is number
+        && p.variants is list && p.variants.size() <= 30;
+    }
+
+    match /products/{productId} {
+      // Visitors only ever see products that are switched on; a query must filter on active == true.
+      allow read: if resource.data.active == true || isAdmin();
+      allow create, update: if isAdmin() && validProduct(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Product photos uploaded in the admin panel, stored as compressed data URLs (see src/catalog/photos.ts).
+    match /photos/{photoId} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if isAdmin()
+        && request.resource.data.data is string
+        && request.resource.data.data.size() < 900000;
+      allow delete: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      // Lets the admin panel check whether the signed in account is an admin. Nobody can grant themselves access.
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+  }
+}

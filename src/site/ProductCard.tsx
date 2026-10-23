@@ -1,31 +1,48 @@
 import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react';
-import { ProductCow } from '../characters';
+import { Link } from 'react-router-dom';
+import { isProductKey, ProductCow } from '../characters';
 import { canHover, useReducedMotion } from '../characters/hooks';
-import { asset, GHEE_IMG, orderMsg, waLink, type GheeSize, type SiteProduct } from './content';
+import { findVariant, imageUrl, inStock, priceSummary, rupees, startVariant } from '../catalog/format';
+import { usePhotoSrc } from '../catalog/photos';
+import type { CatalogProduct, Variant } from '../catalog/types';
+import { orderMsg, waLink } from './content';
 import { ChatIcon } from './icons';
 import { ProductArt } from './ProductArt';
 
 const FADE_MS = 180;
 
-export function ProductCard({ product: p }: { product: SiteProduct }) {
+/**
+ * `order`: the full card with sizes, prices and the WhatsApp Order button (the products page).
+ * `link`: a preview whose whole card opens that product on the products page (the home page).
+ */
+type Mode = 'order' | 'link';
+
+export function ProductCard({ product: p, mode = 'order', highlight }: { product: CatalogProduct; mode?: Mode; highlight?: boolean }) {
   const card = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
   const tilt = !reduce && canHover();
-  const [size, setSize] = useState<GheeSize | undefined>(p.defaultSize);
-  // The jar photo fades out, swaps, and fades back in when the size changes.
-  const [shownSize, setShownSize] = useState(size);
+  // Kept as a label, so a fresh copy of the catalog (new prices, stock) shows through.
+  const [label, setLabel] = useState(() => startVariant(p)?.label);
+  const variant = findVariant(p, label) ?? startVariant(p);
+  // A size with its own photo (the ghee jars) fades out, swaps, and fades back in.
+  const src = variant?.image ?? p.variants.find((v) => v.image)?.image;
+  const [shownSrc, setShownSrc] = useState(src);
   const [fading, setFading] = useState(false);
   const video = useVideoOnHover(p.video ? card : null, reduce);
 
   useEffect(() => {
-    if (size === shownSize) return;
+    if (src === shownSrc) return;
     setFading(true);
     const t = window.setTimeout(() => {
-      setShownSize(size);
+      setShownSrc(src);
       setFading(false);
     }, FADE_MS);
     return () => window.clearTimeout(t);
-  }, [size, shownSize]);
+  }, [src, shownSrc]);
+
+  useEffect(() => {
+    if (highlight) card.current?.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' });
+  }, [highlight, reduce]);
 
   const onMove = (e: PointerEvent<HTMLElement>) => {
     const el = card.current;
@@ -42,53 +59,91 @@ export function ProductCard({ product: p }: { product: SiteProduct }) {
     card.current?.style.setProperty('--ry', '0deg');
   };
 
+  const available = variant ? variant.inStock : inStock(p);
+  const hasPhoto = Boolean(shownSrc || p.image);
+  const sizeUrl = usePhotoSrc(shownSrc);
+  const photoUrl = usePhotoSrc(p.image);
+  const summary = priceSummary(p);
+  const detail = [variant?.label, variant?.price != null ? rupees(variant.price) : null].filter(Boolean).join(', ');
+
   return (
     <article
       ref={card}
-      className={['card', 'reveal', 'has-product-cow', p.feature && 'feature'].filter(Boolean).join(' ')}
+      id={`product-${p.id}`}
+      className={['card', 'reveal', 'has-product-cow', !available && 'is-out', highlight && 'is-highlight'].filter(Boolean).join(' ')}
       onPointerMove={onMove}
       onPointerLeave={onLeave}
     >
       <div className={['card-art', video.playing && 'playing'].filter(Boolean).join(' ')} ref={video.box}>
-        <span className={['card-tag', !p.art && 'real'].filter(Boolean).join(' ')}>{p.tag}</span>
-        {shownSize && (
-          <img className="art-img" src={asset(GHEE_IMG[shownSize])} alt="Nimmi's Pure Ghee jar" loading="lazy" style={{ opacity: fading ? 0 : 1 }} />
-        )}
-        {p.photo && <img className="art-img art-photo" src={asset(p.photo)} alt={`Nimmi's ${p.name} pouch`} loading="lazy" />}
-        {p.video && p.photo && (
-          <video ref={video.ref} muted loop playsInline preload="none" poster={asset(p.photo)}>
-            <source src={asset(p.video)} type="video/mp4" />
+        <span className={['card-tag', hasPhoto && 'real'].filter(Boolean).join(' ')}>{p.tag || p.category}</span>
+        {sizeUrl && <img className="art-img" src={sizeUrl} alt={`Nimmi’s ${p.name}, ${variant?.label ?? ''}`} loading="lazy" style={{ opacity: fading ? 0 : 1 }} />}
+        {!shownSrc && photoUrl && <img className="art-img art-photo" src={photoUrl} alt={`Nimmi’s ${p.name}`} loading="lazy" />}
+        {p.video && photoUrl && (
+          <video ref={video.ref} muted loop playsInline preload="none" poster={photoUrl}>
+            <source src={imageUrl(p.video)} type="video/mp4" />
           </video>
         )}
-        {p.art && <ProductArt art={p.art} />}
-        <ProductCow product={p.key} />
+        {!hasPhoto && p.art && <ProductArt art={p.art} />}
+        {isProductKey(p.id) && <ProductCow product={p.id} />}
       </div>
       <div className="card-body">
         <div className="card-title">
           <h3>{p.name}</h3>
-          <span className="ml">{p.ml}</span>
+          {p.nameMl && <span className="ml">{p.nameMl}</span>}
         </div>
-        <p>{p.desc}</p>
-        {p.sizes && (
+        <p>{p.description}</p>
+        {mode === 'order' && p.variants.length > 0 && (
           <div className="sizes" role="group" aria-label="Size">
-            {p.sizes.map((s) => (
-              <button key={s} className="size" type="button" aria-pressed={s === size} onClick={() => setSize(s)}>
-                {s}
+            {p.variants.map((v) => (
+              <button
+                key={v.label}
+                className="size"
+                type="button"
+                aria-pressed={v.label === variant?.label}
+                disabled={!v.inStock}
+                title={v.inStock ? undefined : 'Out of stock'}
+                onClick={() => setLabel(v.label)}
+              >
+                {v.label}
               </button>
             ))}
           </div>
         )}
         <div className="card-foot">
-          <span className="price">
-            <b>₹</b>Price on WhatsApp
-          </span>
-          <a className="btn btn-sm" href={waLink(orderMsg(p.name, size))} target="_blank" rel="noopener noreferrer" data-order="">
-            <ChatIcon />
-            Order
-          </a>
+          {mode === 'order' ? <VariantPrice variant={variant} /> : <span className="price">{summary ? <b>{summary}</b> : <><b>₹</b>Price on WhatsApp</>}</span>}
+          {mode === 'link' ? (
+            <Link className="btn btn-sm card-link" to={`/products?item=${encodeURIComponent(p.id)}`}>
+              View<span className="sr-only"> {p.name}</span>
+            </Link>
+          ) : available ? (
+            <a className="btn btn-sm" href={waLink(orderMsg(p.name, detail))} target="_blank" rel="noopener noreferrer" data-order="">
+              <ChatIcon />
+              Order
+            </a>
+          ) : (
+            <a className="btn btn-sm btn-ghost" href={waLink(`Hi Nimmi's Products! Is ${p.name} back in stock?`)} target="_blank" rel="noopener noreferrer">
+              Ask when it’s back
+            </a>
+          )}
         </div>
       </div>
     </article>
+  );
+}
+
+function VariantPrice({ variant }: { variant?: Variant }) {
+  if (variant && !variant.inStock) return <span className="price price-out">Out of stock</span>;
+  if (variant?.price == null)
+    return (
+      <span className="price">
+        <b>₹</b>Price on WhatsApp
+      </span>
+    );
+  return (
+    <span className="price">
+      <b>{rupees(variant.price)}</b>
+      {variant.mrp != null && variant.mrp > variant.price && <s className="mrp">{rupees(variant.mrp)}</s>}
+    </span>
   );
 }
 
