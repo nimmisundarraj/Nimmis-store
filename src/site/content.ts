@@ -1,8 +1,12 @@
 /** Photos and video for the site live in /public/site. */
 export const asset = (file: string) => `${process.env.PUBLIC_URL}/site/${file}`;
 
-/** The WhatsApp number stays out of the source. Set REACT_APP_WHATSAPP_NUMBER in .env (digits only, with country code). */
-const WHATSAPP = process.env.REACT_APP_WHATSAPP_NUMBER ?? '';
+/**
+ * The WhatsApp number stays out of the source. Set REACT_APP_WHATSAPP_NUMBER in .env, ideally with the country code.
+ * wa.me wants digits only with the country code, so spaces, dashes and "+" are dropped and a bare 10 digit Indian number gets 91.
+ */
+const WA_DIGITS = (process.env.REACT_APP_WHATSAPP_NUMBER ?? '').replace(/\D/g, '');
+const WHATSAPP = WA_DIGITS.length === 10 ? `91${WA_DIGITS}` : WA_DIGITS;
 
 export const waLink = (text: string) => `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`;
 
