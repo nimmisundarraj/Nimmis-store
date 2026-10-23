@@ -4,6 +4,7 @@ import { rupees } from '../catalog/format';
 import { usePhotoSrc } from '../catalog/photos';
 import type { CatalogProduct, Variant } from '../catalog/types';
 import { useCatalog } from '../catalog/useCatalog';
+import { track } from '../lib/analytics';
 import { DELIVERY_FORM, GENERAL_ORDER, waLink } from './content';
 import { ChatIcon } from './icons';
 
@@ -38,21 +39,34 @@ const lineKey = (id: string, size: string) => `${id}|${size}`;
 
 function setQty(key: string, n: number) {
   const qty = { ...state.qty };
+  if (n > 0 && !qty[key]) trackAdd(key, 'sheet');
   if (n > 0) qty[key] = Math.min(n, MAX_QTY);
   else delete qty[key];
   update({ qty });
 }
 
+function trackAdd(key: string, via: 'sheet' | 'dish') {
+  const [product, size] = key.split('|');
+  track('item_added', { product, size: size || undefined, via });
+}
+
+const trackOpen = (focus?: string) => track('order_sheet_opened', { page: window.location.pathname, product: focus });
+
 /** Opens the sheet; `focus` scrolls to and marks one product. */
-export const openOrderPicker = (focus?: string) => update({ open: true, focus });
+export function openOrderPicker(focus?: string) {
+  trackOpen(focus);
+  update({ open: true, focus });
+}
 
 /** Puts at least one of each item in the order, then opens the sheet on the first. */
 export function addToOrder(items: { id: string; size: string }[]) {
   const qty = { ...state.qty };
   items.forEach(({ id, size }) => {
     const key = lineKey(id, size);
+    if (!qty[key]) trackAdd(key, 'dish');
     qty[key] = Math.max(qty[key] ?? 0, 1);
   });
+  trackOpen(items[0]?.id);
   update({ qty, open: true, focus: items[0]?.id });
 }
 
@@ -142,7 +156,7 @@ export function OrderPicker() {
         {!onProductsPage && (
           <p className="order-sheet__more">
             Want to see photos and details first?{' '}
-            <Link to="/products" onClick={close}>
+            <Link to="/products" state={{ from: 'order-sheet' }} onClick={close}>
               See all products
             </Link>
           </p>
@@ -161,7 +175,18 @@ export function OrderPicker() {
           )}
         </p>
         {count ? (
-          <a className="btn" href={waLink(orderMessage(lines))} target="_blank" rel="noopener noreferrer" data-order="" onClick={close}>
+          <a
+            className="btn"
+            href={waLink(orderMessage(lines))}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-order=""
+            data-track-skip=""
+            onClick={() => {
+              track('order_sent', { items: count, lines: lines.length, total, products: lines.map((l) => l.product.id) });
+              close();
+            }}
+          >
             <ChatIcon />
             Send order on WhatsApp
           </a>

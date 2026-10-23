@@ -18,7 +18,7 @@ export function MoreProductsCard({ hidden, all }: { hidden: CatalogProduct[]; al
   // Only what the grid left out; with nothing left out, a peek at the whole shop instead.
   const photos = (hidden.length ? hidden : all).filter(photoOf).slice(0, 4);
   return (
-    <Link className="card more-card reveal" to="/products">
+    <Link className="card more-card reveal" to="/products" state={{ from: 'more-tile' }}>
       <div className="more-card__art" data-tiles={photos.length} aria-hidden="true">
         {photos.map((p) => (
           <Tile key={p.id} product={p} />

@@ -137,7 +137,7 @@ export function NimmiSite() {
               <h3>Every jar carries a little tradition.</h3>
               <p>Choose your Nimmi’s size and speak with us directly to place your order.</p>
               <div className="cta-row">
-                <Link className="btn" to="/products">
+                <Link className="btn" to="/products" state={{ from: 'see-all' }}>
                   See all products
                 </Link>
                 <OrderButton className="btn btn-ghost">

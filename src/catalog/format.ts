@@ -30,13 +30,13 @@ export function percentOff(price: number, mrp?: number | null): number | null {
   return off > 0 ? off : null;
 }
 
-/** The cheapest priced size (and its MRP), with `from` set when sizes differ in price. */
-export function lowestPrice(p: CatalogProduct): { price: number; mrp: number | null; from: boolean } | null {
+/** The cheapest priced size (its price, MRP and label), with `from` set when sizes differ in price. */
+export function lowestPrice(p: CatalogProduct): { price: number; mrp: number | null; label: string; from: boolean } | null {
   const priced = p.variants.filter((v): v is Variant & { price: number } => typeof v.price === 'number');
   if (!priced.length) return null;
   const pool = priced.some((v) => v.inStock) ? priced.filter((v) => v.inStock) : priced;
   const low = pool.reduce((a, b) => (b.price < a.price ? b : a));
-  return { price: low.price, mrp: low.mrp ?? null, from: priced.some((v) => v.price !== low.price) };
+  return { price: low.price, mrp: low.mrp ?? null, label: low.label, from: priced.some((v) => v.price !== low.price) };
 }
 
 export const inStock =(p: CatalogProduct) => !p.variants.length || p.variants.some((v) => v.inStock);

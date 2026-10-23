@@ -9,7 +9,7 @@ export type NavLink = { href: string; label: string };
 /** In-app routes go through the router; anchors (#shop, /#founders) are plain links so the browser scrolls to them. */
 function NavItem({ link, onClick }: { link: NavLink; onClick?: () => void }) {
   return link.href.startsWith('/') && !link.href.includes('#') ? (
-    <Link to={link.href} onClick={onClick}>
+    <Link to={link.href} state={{ from: 'nav' }} onClick={onClick}>
       {link.label}
     </Link>
   ) : (
