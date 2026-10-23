@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import { CowLoader, CowPeek, OrderReactions } from '../characters';
 import { useReducedMotion } from '../characters/hooks';
-import { asset, EMAIL, FSSAI_NO, GENERAL_ORDER, GHEE_IMG, INSTAGRAM_URL, MAP_EMBED, MAPS_URL, PRODUCTS, SHOP_HOURS, SIZE_RANGE, USES, sizeOrderMsg, waLink } from './content';
+import { Link } from 'react-router-dom';
+import { findVariant, rupees } from '../catalog/format';
+import type { CatalogProduct } from '../catalog/types';
+import { useCatalog } from '../catalog/useCatalog';
+import { asset, EMAIL, FSSAI_NO, GENERAL_ORDER, GHEE_IMG, INSTAGRAM_URL, MAP_EMBED, MAPS_URL, SHOP_HOURS, SIZE_RANGE, USES, sizeOrderMsg, waLink } from './content';
 import { Founders } from './Founders';
 import { Hero } from './hero/Hero';
-import { ChatIcon, GoldWordmark, SvgDefs } from './icons';
-import { Process } from './Process';
+import { ChatIcon, SvgDefs } from './icons';
 import { ProductCard } from './ProductCard';
+import { SiteFooter, SiteHeader } from './SiteChrome';
 import './site.css';
 
 /** The loader's minimum time on screen, plus its 700 ms fade; the pour waits for both. */
@@ -16,8 +20,7 @@ const INTRO_MS = LOADER_MS + 700;
 const INTRO_KEY = 'nimmi-intro-seen';
 
 const NAV = [
-  { href: '#sizes', label: 'Products' },
-  { href: '#made', label: 'Our craft' },
+  { href: '/products', label: 'Products' },
   { href: '#founders', label: 'Our story' },
 ];
 
@@ -26,13 +29,12 @@ const MARQUEE = ['Making ghee since 1994', 'നെയ്യ്', 'Small batches,
 /** The one-page Nimmi's ghee site. */
 export function NimmiSite() {
   const root = useRef<HTMLDivElement>(null);
-  const header = useRef<HTMLElement>(null);
   const [sceneReady, setSceneReady] = useState(false);
   const onSceneReady = useCallback(() => setSceneReady(true), []);
   const [introSeen] = useState(() => readFlag(INTRO_KEY));
-  useHeaderHeight(header);
-  const compactNav = useScrolledPast(24);
-  const [menuOpen, setMenuOpen] = useMenuDismiss(header);
+  const { products } = useCatalog();
+  const featured = products.filter((p) => p.featured);
+  const ghee = products.find((p) => p.id === 'ghee');
   useReveal(root);
 
   useEffect(() => {
@@ -62,52 +64,7 @@ export function NimmiSite() {
       )}
       <OrderReactions />
 
-      <header className="site-header" ref={header} data-compact={compactNav ? '' : undefined}>
-        <div className="nav-pill">
-          <a className="brand" href="#top" aria-label="Nimmi's Products, home">
-            <img className="brand-mark" src={asset('cow-emblem-128.webp')} alt="" width={122} height={128} />
-            <GoldWordmark />
-          </a>
-          <nav className="nav" aria-label="Main">
-            {NAV.map((l) => (
-              <a key={l.href} href={l.href}>
-                {l.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            className="btn btn-sm nav-cta"
-            href={waLink(GENERAL_ORDER)}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Order on WhatsApp"
-            data-order=""
-          >
-            <ChatIcon />
-            <span>
-              Order<span className="nav-cta__more"> on WhatsApp</span>
-            </span>
-          </a>
-          <button
-            type="button"
-            className="nav-toggle"
-            aria-expanded={menuOpen}
-            aria-controls="site-menu"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <span aria-hidden="true" />
-          </button>
-          <div className="progress" aria-hidden="true" />
-        </div>
-        <nav id="site-menu" className="nav-menu" aria-label="Main" hidden={!menuOpen}>
-          {NAV.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}>
-              {l.label}
-            </a>
-          ))}
-        </nav>
-      </header>
+      <SiteHeader nav={NAV} brandHref="#top" />
 
       <main id="top">
         <Hero onSceneReady={onSceneReady} introMs={introSeen ? 0 : INTRO_MS} />
@@ -138,6 +95,7 @@ export function NimmiSite() {
                   <div className="size-info">
                     <h3 className="size-qty">{s.label}</h3>
                     <p className="size-note">{s.note}</p>
+                    <SizePrice ghee={ghee} size={s.size} />
                   </div>
                   {/* The link stretches over the whole card, so the jar is a tap target too without nesting links. */}
                   <a className="size-cta" href={waLink(sizeOrderMsg(s.label))} target="_blank" rel="noopener noreferrer" data-order="">
@@ -157,25 +115,29 @@ export function NimmiSite() {
             <div className="section-head">
               <span className="eyebrow">Dry fruits and spices</span>
               <h2 id="range-title">Alongside the ghee, what our customers asked for.</h2>
-              <p>Tap Order on any of them. WhatsApp opens with your choice filled in.</p>
+              <p>Tap any of them for sizes and prices, then order on WhatsApp.</p>
             </div>
             <div className="grid-products">
-              {PRODUCTS.map((p) => (
-                <ProductCard key={p.key} product={p} />
+              {featured.map((p) => (
+                <ProductCard key={p.id} product={p} mode="link" />
               ))}
             </div>
             <div className="sizes-close">
               <h3>Every jar carries a little tradition.</h3>
               <p>Choose your Nimmi’s size and speak with us directly to place your order.</p>
-              <a className="btn" href={waLink(sizeOrderMsg())} target="_blank" rel="noopener noreferrer" data-order="">
-                <ChatIcon />
-                Order on WhatsApp
-              </a>
+              <div className="cta-row">
+                <Link className="btn" to="/products">
+                  See all products
+                </Link>
+                <a className="btn btn-ghost" href={waLink(sizeOrderMsg())} target="_blank" rel="noopener noreferrer" data-order="">
+                  <ChatIcon />
+                  Order on WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
-        <Process />
         <Founders />
 
         {/* The founders' story is told once, just above; this half is the shop you can visit. */}
@@ -296,19 +258,18 @@ export function NimmiSite() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <div className="wrap">
-          <span className="footer-brand">
-            <img className="brand-mark" src={asset('cow-emblem-128.webp')} alt="" width={122} height={128} loading="lazy" />
-            <GoldWordmark />
-          </span>
-          <span className="tag">Made by hand in Thalassery since 1994.</span>
-          <span>© {new Date().getFullYear()} Nimmi’s Products, Thalassery</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
     </div>
   );
+}
+
+/** The jar's price from the catalog, once one has been set in the admin panel. */
+function SizePrice({ ghee, size }: { ghee?: CatalogProduct; size: string }) {
+  const v = ghee && findVariant(ghee, size);
+  if (!v) return null;
+  if (!v.inStock) return <p className="size-price size-price--out">Out of stock</p>;
+  return v.price != null ? <p className="size-price">{rupees(v.price)}</p> : null;
 }
 
 /** sessionStorage can throw (private mode, blocked storage); then the intro just plays again. */
@@ -326,58 +287,6 @@ function writeFlag(key: string) {
   } catch {
     // ignore
   }
-}
-
-/** Publishes how far down the floating nav reaches as --header-h, so anchored sections land just below it. */
-function useHeaderHeight(header: RefObject<HTMLElement>) {
-  useEffect(() => {
-    const el = header.current;
-    if (!el) return;
-    const set = () => document.documentElement.style.setProperty('--header-h', `${el.offsetHeight}px`);
-    const ro = new ResizeObserver(set);
-    ro.observe(el, { box: 'border-box' });
-    set();
-    return () => ro.disconnect();
-  }, [header]);
-}
-
-/** The mobile menu's open state. It closes on Escape (returning focus to its button), on a tap outside the header, and when the window grows past the phone layout. */
-function useMenuDismiss(header: RefObject<HTMLElement>) {
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setOpen(false);
-      header.current?.querySelector<HTMLElement>('.nav-toggle')?.focus();
-    };
-    const onPointer = (e: PointerEvent) => {
-      if (!header.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const wide = window.matchMedia('(min-width: 761px)');
-    const onWide = () => wide.matches && setOpen(false);
-    document.addEventListener('keydown', onKey);
-    document.addEventListener('pointerdown', onPointer);
-    wide.addEventListener('change', onWide);
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      document.removeEventListener('pointerdown', onPointer);
-      wide.removeEventListener('change', onWide);
-    };
-  }, [open, header]);
-  return [open, setOpen] as const;
-}
-
-/** True once the page has scrolled more than `px`; the nav tightens into its compact state from there. */
-function useScrolledPast(px: number) {
-  const [past, setPast] = useState(false);
-  useEffect(() => {
-    const check = () => setPast(window.scrollY > px);
-    window.addEventListener('scroll', check, { passive: true });
-    check();
-    return () => window.removeEventListener('scroll', check);
-  }, [px]);
-  return past;
 }
 
 /** Lifts every .reveal element into place the first time it scrolls into view. */

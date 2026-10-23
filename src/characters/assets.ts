@@ -86,3 +86,6 @@ export const PRODUCT_LABELS: Record<ProductKey, string> = {
   cashew: 'Cashew JHA',
   anise: 'Star Anise',
 };
+
+/** Catalog products added later in the admin panel have no cow pose of their own. */
+export const isProductKey = (id: string): id is ProductKey => Object.prototype.hasOwnProperty.call(PRODUCT_LABELS, id);

@@ -10,4 +10,4 @@ export { NotFound } from './NotFound';
 export { OrderReactions } from './OrderReactions';
 export { ProductCow } from './ProductCow';
 export { setOrderMood, useOrderMood } from './orderMood';
-export { PRODUCT_LABELS, characterSources, type CharacterName, type ProductKey } from './assets';
+export { PRODUCT_LABELS, characterSources, isProductKey, type CharacterName, type ProductKey } from './assets';

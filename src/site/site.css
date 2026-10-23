@@ -272,33 +272,6 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
 }
 @container (min-width: 420px) { .card-body { padding: 1.4rem 1.5rem 1.5rem; } }
 
-/* how it's made */
-.process { background: var(--bg-page); border-block: 1px solid var(--line); }
-.process-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-l); align-items: start; }
-.pot-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 96px); display: grid; gap: 1rem; justify-items: center; }
-/* the stage photos are cut out on transparency and stacked; the one for the current step fades in */
-.pot-wrap { position: relative; width: 100%; max-width: 520px; aspect-ratio: 960 / 916; }
-.pot-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; opacity: 0; transition: opacity .6s ease; }
-.pot-wrap img[data-shown] { opacity: 1; }
-.readout { display: flex; gap: 1.2rem; align-items: baseline; font-family: var(--f-mono); color: var(--cream-faint); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
-.readout strong { font-family: var(--f-display); font-weight: 300; font-size: var(--step-3); letter-spacing: 0; text-transform: none; color: var(--gold-hi); font-variant-numeric: tabular-nums; }
-.steps { list-style: none; margin: 0; padding: 0; display: grid; }
-.step { min-height: 62vh; display: grid; align-content: center; gap: 0.7rem; padding-block: 2rem; opacity: .3; transition: opacity .5s; }
-/* tall enough that the pinned pot is still beside the last step when it lines up */
-.step:last-child { min-height: 80vh; align-content: start; padding-top: 18vh; }
-.step.is-active { opacity: 1; }
-.step-n { font-family: var(--f-mono); font-size: 0.78rem; letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase; }
-.step h3 { font-size: var(--step-3); }
-.step p { color: var(--cream-dim); max-width: 40ch; font-size: var(--step-1); line-height: 1.5; }
-@media (max-width: 860px) {
-  .process-grid { grid-template-columns: 1fr; gap: 0; }
-  .pot-col { top: calc(env(safe-area-inset-top, 0px) + 58px); z-index: 2; background: linear-gradient(var(--forest-0) 85%, transparent); padding-block: 0.5rem 1.5rem; }
-  .pot-wrap { max-width: 280px; }
-  .readout strong { font-size: var(--step-2); }
-  .step { min-height: 52vh; }
-  .step:last-child { min-height: 50vh; align-content: center; padding-top: 2rem; }
-}
-
 /* where it goes */
 .uses-sec { background: var(--bg-page); }
 .uses { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--space-s); }
@@ -410,3 +383,39 @@ body:has(.nimmi-site) .cow-buddy { display: none; }
   .nimmi-site *, .nimmi-site *::before, .nimmi-site *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   html { scroll-behavior: auto; }
 }
+
+/* catalog: prices, stock and the home page's preview cards */
+.price .mrp { margin-left: 0.45rem; font-size: 0.85rem; color: var(--cream-faint); }
+.price-out { color: var(--gold-hi); letter-spacing: 0.06em; text-transform: uppercase; }
+.size:disabled { opacity: .4; text-decoration: line-through; cursor: not-allowed; }
+.size:disabled:hover { border-color: var(--line); }
+.card.is-out .card-art { filter: grayscale(.6); opacity: .75; }
+/* on the home page the whole card opens the product on the products page */
+.card-link::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: var(--radius); }
+.card:has(.card-link) { cursor: pointer; }
+.card.is-highlight { border-color: var(--gold); box-shadow: 0 0 0 2px var(--gold), 0 30px 60px -30px rgba(242, 200, 107, .55); animation: card-ring 1.6s ease-out 0.4s 2; }
+@keyframes card-ring { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 35%, transparent), 0 30px 60px -30px rgba(242, 200, 107, .55); } }
+.size-price { margin: 0.2rem 0 0; font: 400 var(--step-1)/1.2 var(--f-display); color: var(--gold-hi); }
+.size-price--out { font: 600 0.78rem/1.3 var(--f-body); letter-spacing: 0.08em; text-transform: uppercase; }
+.sizes-close .cta-row { justify-content: center; }
+
+/* the products page */
+.shop-page .shop { padding-top: calc(var(--header-h, 76px) + var(--space-l)); min-height: 100vh; min-height: 100svh; }
+.shop-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1.2rem; margin-bottom: var(--space-m); }
+.shop-search { flex: 1 1 260px; max-width: 420px; }
+.shop-search input {
+  width: 100%; min-height: 48px; padding: 0.7em 1.1em; border-radius: 999px;
+  background: var(--forest-2); color: var(--cream); border: 1.5px solid var(--line);
+  font: 500 1rem/1.2 var(--f-body); /* 16px keeps iOS from zooming on focus */
+  -webkit-user-select: text; user-select: text;
+}
+.shop-search input::placeholder { color: var(--cream-faint); }
+.shop-search input:focus { outline: none; border-color: var(--gold); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.chip { min-height: 40px; padding: 0.5em 1em; border-radius: 999px; background: transparent; color: var(--cream-dim); border: 1.5px solid var(--line); font: 500 0.9rem/1 var(--f-body); cursor: pointer; transition: background .2s, color .2s, border-color .2s; }
+.chip:hover { border-color: var(--cream-faint); color: var(--cream); }
+.chip[aria-pressed="true"] { background: var(--cream); border-color: var(--cream); color: var(--forest-0); }
+.shop-empty { display: grid; justify-items: start; gap: 0.8rem; padding-block: var(--space-m); color: var(--cream-dim); }
+.card-skeleton { min-height: 420px; background: linear-gradient(100deg, var(--forest-2) 30%, var(--forest-3) 50%, var(--forest-2) 70%) 0 0 / 300% 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -150% 0; } }
+@media (prefers-reduced-motion: reduce) { .card.is-highlight, .card-skeleton { animation: none; } }
